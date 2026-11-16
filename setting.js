@@ -1,15 +1,19 @@
-// Pengaturan admin: bobot instrumen, ambang predikat, dan isi rubrik. Disimpan di sheet "Pengaturan".
+// Pengaturan admin: bobot gabungan nilai dan batas predikat. Disimpan di sheet "Pengaturan".
 V.setting=()=>{const b=CFG.bobot,a=CFG.ambang;
-const bw=[['obs','Observasi guru'],['peer','Teman sebaya'],['diri','Penilaian diri'],['produk','Produk kelompok']];
-return`<div class="card"><h3>Bobot instrumen (total harus 100)</h3><div class="g2">${bw.map(([k,n])=>`<div><label>${n} (%)</label><input id="s_${k}" type="number" min="0" max="100" value="${b[k]}"></div>`).join('')}</div></div>
-<div class="card"><h3>Batas nilai predikat (skala 1-4)</h3><div class="g2"><div><label>Sangat Baik ≥</label><input id="a0" type="number" step="0.05" value="${a[0]}"></div><div><label>Baik ≥</label><input id="a1" type="number" step="0.05" value="${a[1]}"></div><div><label>Cukup ≥</label><input id="a2" type="number" step="0.05" value="${a[2]}"></div><div><p class="m">Di bawah batas Cukup = Perlu Bimbingan.</p></div></div></div>
-<div class="card"><h3>Rubrik indikator</h3>${KN.map((n,i)=>`<b>K${i+1} ${n}</b><div class="g2">${[4,3,2,1].map((v,j)=>`<div><label>Skor ${v}</label><textarea id="r${i}_${j}" rows="2">${esc(CFG.rubrik[i][j])}</textarea></div>`).join('')}</div>`).join('<hr>')}</div>
-<button class="btn" onclick="saveCfg()">Simpan pengaturan</button>`};
+return head('Pengaturan','Bobot sumber penilaian dan batas predikat.')+`<div class="card"><h3>Bobot nilai karakter (total 100)</h3><div class="fl">
+<div><label>Observasi guru (%)</label><input id="s_obs" type="number" min="0" max="100" value="${b.obs}"></div>
+<div><label>Teman sebaya (%)</label><input id="s_peer" type="number" min="0" max="100" value="${b.peer}"></div>
+<div><label>Penilaian diri (%)</label><input id="s_diri" type="number" min="0" max="100" value="${b.diri}"></div></div>
+<p class="m">Jika suatu sumber belum ada datanya, bobot dibagi ulang ke sumber yang tersedia.</p></div>
+<div class="card"><h3>Batas predikat (skor 0-100)</h3><div class="fl">
+<div><label>Sangat Baik ≥</label><input id="a0" type="number" value="${a[0]}"></div>
+<div><label>Baik ≥</label><input id="a1" type="number" value="${a[1]}"></div>
+<div><label>Cukup ≥</label><input id="a2" type="number" value="${a[2]}"></div></div>
+<p class="m">Di bawah batas Cukup = Perlu Bimbingan.</p><button class="btn" onclick="saveCfg()">Simpan pengaturan</button></div>`};
 async function saveCfg(){
-  const bobot={};['obs','peer','diri','produk'].forEach(k=>bobot[k]=+$('#s_'+k).value||0);
-  if(Object.values(bobot).reduce((t,x)=>t+x,0)!=100)return toast('Total bobot harus 100',1);
+  const bobot={obs:+$('#s_obs').value||0,peer:+$('#s_peer').value||0,diri:+$('#s_diri').value||0};
+  if(bobot.obs+bobot.peer+bobot.diri!=100)return toast('Total bobot harus 100',1);
   const ambang=[0,1,2].map(i=>+$('#a'+i).value);
   if(!(ambang[0]>ambang[1]&&ambang[1]>ambang[2]))return toast('Batas predikat harus menurun',1);
-  const rubrik=KN.map((n,i)=>[0,1,2,3].map(j=>$(`#r${i}_${j}`).value));
-  try{await api('saveCfg',{bobot,ambang,rubrik});CFG={bobot,ambang,rubrik};toast('Pengaturan tersimpan')}catch(e){toast(e.message,1)}
+  try{await api('saveCfg',{bobot,ambang});CFG={bobot,ambang};toast('Pengaturan tersimpan')}catch(e){toast(e.message,1)}
 }
