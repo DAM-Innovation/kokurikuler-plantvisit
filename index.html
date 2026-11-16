@@ -1,107 +1,139 @@
 <!DOCTYPE html>
-<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><meta charset="utf-8"><title>Kolaborasi Plant Visit</title>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Karakter Plant Visit · SMK SMTI Padang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--p:#0f766e;--bg:#f2f6f5;--c:#fff;--t:#1b2b2a;--m:#64748b;--l:#d9e3e1}
-*{box-sizing:border-box}body{margin:0;font:15px system-ui,sans-serif;background:var(--bg);color:var(--t)}
-header{background:var(--p);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 16px}
-nav{display:flex;gap:4px;overflow-x:auto;background:var(--c);padding:6px 12px;border-bottom:1px solid var(--l)}
-nav button{display:flex;align-items:center;gap:6px;border:0;background:none;padding:8px 12px;border-radius:8px;color:var(--m);cursor:pointer;white-space:nowrap;font:inherit}
-nav button.on{background:#e0f2f1;color:var(--p);font-weight:600}
-main{max-width:980px;margin:16px auto;padding:0 12px}
-.card{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:16px;margin-bottom:14px}
-h3{margin:0 0 10px}.m{color:var(--m);font-size:13px}
-input,select,textarea{width:100%;padding:9px;border:1px solid var(--l);border-radius:8px;font:inherit;margin:4px 0 10px;background:#fff}
-.btn{background:var(--p);color:#fff;border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font:inherit;margin-right:6px}
-.btn.g{background:#fff;color:var(--p);border:1px solid var(--p)}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--l)}
-.seg{display:flex;gap:4px}.seg input{display:none}
-.seg span{display:block;width:40px;text-align:center;padding:7px 0;border:1px solid var(--l);border-radius:8px;cursor:pointer}
-.seg input:checked+span{background:var(--p);color:#fff;border-color:var(--p)}
-table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid var(--l);padding:7px;text-align:left;vertical-align:top}
-tr.k{cursor:pointer}tr.k:hover{background:#f2f6f5}
-.b{padding:2px 9px;border-radius:99px;font-size:12px;color:#fff;white-space:nowrap}.w{overflow-x:auto}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:640px){.g2{grid-template-columns:1fr}}
-#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1b2b2a;color:#fff;padding:10px 16px;border-radius:8px;display:none;z-index:9}
+:root{--p:#0b5f5a;--bg:#f4f6f8;--c:#fff;--t:#14232b;--m:#64748b;--l:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;font:14px/1.55 'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--t)}
+#app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:linear-gradient(180deg,#0b5f5a,#083f43);color:#d5ebe8;padding:16px 12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.br{display:flex;gap:10px;align-items:center;padding:4px 8px 16px;color:#fff}.br b{display:block;line-height:1.2}.br small{opacity:.7;font-size:11px}
+nav{display:flex;flex-direction:column;gap:2px;flex:1}
+nav button{display:flex;gap:10px;align-items:center;background:none;border:0;color:inherit;padding:10px 12px;border-radius:10px;cursor:pointer;font:inherit;text-align:left;white-space:nowrap}
+nav button:hover{background:#ffffff14}nav button.on{background:#fff;color:var(--p);font-weight:600}
+.us{padding:10px 8px 0;border-top:1px solid #ffffff22;font-size:12px}.us b,.us small{display:block}.us button{margin-top:8px;width:100%;background:#ffffff1a;color:#fff;border:0;border-radius:8px;padding:7px;cursor:pointer;font:inherit}
+main{padding:24px;max-width:1120px;width:100%}
+.ph h2{margin:0;font-size:22px}.ph p{margin:2px 0 16px;color:var(--m)}
+.card{background:var(--c);border:1px solid var(--l);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px #0f172a0a}
+h3{margin:0 0 6px;font-size:15px}h4{margin:14px 0 2px;color:var(--p)}.m{color:var(--m);font-size:13px}.sp{display:flex;justify-content:space-between;align-items:center;gap:8px}
+label{font-size:12px;font-weight:600;color:var(--m);display:block}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;margin:4px 0 10px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid #0b5f5a55;border-color:var(--p)}
+textarea:disabled{background:#f1f5f9}
+.btn{background:var(--p);color:#fff;border:0;padding:9px 16px;border-radius:9px;cursor:pointer;font:inherit;font-weight:600;margin:0 6px 4px 0}.btn.g{background:#fff;color:var(--p);border:1px solid var(--p)}
+.chip{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{display:flex;align-items:center;gap:6px;border:1px solid var(--l);background:#fff;border-radius:99px;padding:6px 14px;cursor:pointer;font:inherit}.tab.on{background:var(--p);color:#fff;border-color:var(--p)}.tab i{width:8px;height:8px;border-radius:50%}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--l)}.row:last-child{border:0}
+.seg{display:flex;gap:4px}.seg input{display:none}.seg span{display:block;width:40px;text-align:center;padding:6px 0;border:1px solid #cbd5e1;border-radius:8px;cursor:pointer}.seg input:checked+span{background:var(--p);color:#fff;border-color:var(--p)}
+table{width:100%;border-collapse:collapse;font-size:13px}th{color:var(--m);font-size:12px;text-transform:uppercase;letter-spacing:.03em}td,th{border-bottom:1px solid var(--l);padding:8px;text-align:left;vertical-align:middle}
+td input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:#0b5f5a}tr.k{cursor:pointer}tr.k:hover{background:#f8fafc}.w{overflow-x:auto}
+.fl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.fl select{margin-bottom:0}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}.stat div{background:#fff;border:1px solid var(--l);border-radius:14px;padding:14px}.stat b{font-size:24px;display:block;color:var(--p)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+dialog{border:0;border-radius:14px;max-width:560px;width:92%;padding:20px}dialog::backdrop{background:#0f172a66}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:10px;display:none;z-index:99}
+#lg{max-width:360px;margin:12vh auto}
+@media(max-width:860px){#app{grid-template-columns:1fr}aside{position:static;height:auto}nav{flex-direction:row;overflow-x:auto}.us{display:none}.g2{grid-template-columns:1fr}main{padding:14px}}
 </style></head><body>
-<div id="lg" class="card" style="max-width:340px;margin:12vh auto">
-  <div style="color:var(--p);text-align:center" id="lg1"></div>
-  <h3 style="text-align:center">Kolaborasi Plant Visit</h3>
-  <p class="m" style="text-align:center">SMK SMTI Padang · TA 2026/2027</p>
-  <label>ID / NIS</label><input id="u" autocomplete="username">
-  <label>PIN</label><input id="p" type="password" autocomplete="current-password" onkeydown="if(event.key=='Enter')doLogin()">
-  <button class="btn" style="width:100%" onclick="doLogin()">Masuk</button>
-</div>
-<div id="app" hidden>
-  <header><span id="lg2"></span><b>Kolaborasi Plant Visit</b><span id="who" style="margin-left:auto"></span><button class="btn g" onclick="out()">Keluar</button></header>
-  <nav id="nv"></nav><main id="mn"></main>
-</div>
-<div id="toast"></div>
+<div id="lg" class="card"><div style="text-align:center;color:var(--p)" id="lg1"></div><h3 style="text-align:center;font-size:18px;margin-top:6px">Karakter Plant Visit</h3><p class="m" style="text-align:center">Gotong Royong & Bernalar Kritis · SMK SMTI Padang</p>
+<label>ID / NIS</label><input id="u" autocomplete="username"><label>PIN</label><input id="p" type="password" autocomplete="current-password" onkeydown="if(event.key=='Enter')doLogin()"><button class="btn" style="width:100%" onclick="doLogin()">Masuk</button></div>
+<div id="app" hidden><aside><div class="br"><span id="lg2"></span><div><b>Karakter<br>Plant Visit</b><small>SMK SMTI Padang</small></div></div><nav id="nv"></nav><div class="us"><b id="wn"></b><small id="wr"></small><button onclick="out()">Keluar</button></div></aside><main id="mn"></main></div>
+<dialog id="dlg"><div id="dc"></div><button class="btn g" onclick="dlg.close()">Tutup</button></dialog><div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-let T,ME,CFG,TIM=[],MINE,GR=[],REK=[];
+const API_URL='GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT';
+let T,ME,CFG,TH=[],TIM=[],GR=[],REK=[],ENT,PD,PR=[],TS=0,PT=0,NM='diri',OK='',OT=0,F={bus:'',kelas:'',kel:''};
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const KN=['Kerja sama','Komunikasi','Kepedulian','Tanggung jawab bersama','Penyelesaian konflik'];
-const TH=['Team building (10 Des)','Perjalanan Padang-Jakarta (13-14 Des)','Fun Day (15 Des)','Mayora & gala dinner (16 Des)','Pabrik Tangerang (17 Des)','Perjalanan pulang (18-19 Des)','Laporan & seminar'];
+const KD=['GR1','GR2','GR3','BK1','BK2','BK3'],AN=['Kolaborasi','Kepedulian','Berbagi','Mencari & mengolah informasi','Menalar & mengevaluasi','Merefleksi & memutuskan'];
 const PC={'Sangat Baik':'#0f766e','Baik':'#2563eb','Cukup':'#d97706','Perlu Bimbingan':'#dc2626','Belum ada data':'#94a3b8'};
-const LOGO='<svg width="30" height="30" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="14" cy="14" r="4"/><circle cx="5" cy="7" r="2.5"/><circle cx="23" cy="7" r="2.5"/><circle cx="5" cy="21" r="2.5"/><circle cx="23" cy="21" r="2.5"/><path d="M7 8.5l4 3.5M21 8.5l-4 3.5M7 19.5l4-3.5M21 19.5l-4-3.5"/></svg>';
+const LOGO='<svg width="32" height="32" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="14" cy="14" r="4"/><circle cx="5" cy="7" r="2.5"/><circle cx="23" cy="7" r="2.5"/><circle cx="5" cy="21" r="2.5"/><circle cx="23" cy="21" r="2.5"/><path d="M7 8.5l4 3.5M21 8.5l-4 3.5M7 19.5l4-3.5M21 19.5l-4-3.5"/></svg>';
 $('#lg1').innerHTML=LOGO;$('#lg2').innerHTML=LOGO;
-const IC={tugas:'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',diri:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',catatan:'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z',teman:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',obs:'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9z',produk:'M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z',rekap:'M18 20V10M12 20V4M6 20v-6',impor:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12',setting:'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',rubrik:'M3 3h18v18H3zM3 9h18M9 21V9'};
-const LB={tugas:'Tugas saya',diri:'Penilaian diri',catatan:'Jurnal & catatan',teman:'Teman sebaya',obs:'Observasi',produk:'Produk kelompok',rekap:'Rekap & predikat',impor:'Impor data',setting:'Pengaturan',rubrik:'Rubrik'};
-const NAV={siswa:['tugas','diri','catatan','teman','rubrik'],guru:['obs','produk','rekap','rubrik'],admin:['rekap','obs','produk','impor','setting','rubrik']};
-const API_URL='https://script.google.com/macros/s/AKfycbzpnqhFUZueGXq4jywbp7VTdUw6tsO-loIng6kqVIvjQWD5xrlG8WVR3IGZ-uDLVAqy/exec';
+const IC={tugas:'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',nilai:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',pantau:'M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',obs:'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9zM9 14l2 2 4-4',rekap:'M18 20V10M12 20V4M6 20v-6',impor:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12',setting:'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',rubrik:'M3 3h18v18H3zM3 9h18M9 21V9'};
+const LB={tugas:'Tugas & jurnal',nilai:'Penilaian',pantau:'Pantau pengisian',obs:'Observasi',rekap:'Rekap & predikat',impor:'Impor data',setting:'Pengaturan',rubrik:'Indikator & rubrik'};
+const NAV={siswa:['tugas','nilai','rubrik'],guru:['pantau','obs','rekap','rubrik'],admin:['pantau','obs','rekap','impor','setting','rubrik']};
+const V={};
 async function call(b){const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)});const d=await r.json();if(d.error)throw new Error(d.error);return d.data}
 const api=(a,p)=>call({fn:'api',t:T,a,p:p||{}}).catch(e=>{if(/SESI/.test(e.message))out();throw e});
-function toast(m,e){const t=$('#toast');t.textContent=m;t.style.background=e?'#b91c1c':'#1b2b2a';t.style.display='block';setTimeout(()=>t.style.display='none',2800)}
+function toast(m,e){const t=$('#toast');t.textContent=m;t.style.background=e?'#b91c1c':'#14232b';t.style.display='block';setTimeout(()=>t.style.display='none',2800)}
 function out(){T=null;$('#app').hidden=true;$('#lg').style.display='block'}
-async function doLogin(){
-  try{const r=await call({fn:'login',id:$('#u').value,pin:$('#p').value});
-  if(!r)return toast('ID atau PIN salah',1);T=r.token;await sync();
-  $('#lg').style.display='none';$('#app').hidden=false;$('#who').textContent=ME.nama+' ('+ME.role+')';
-  $('#nv').innerHTML=NAV[ME.role].map(k=>`<button id="n_${k}" onclick="go('${k}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[k]}"/></svg>${LB[k]}</button>`).join('');
-  go(NAV[ME.role][0]);}catch(e){toast(e.message,1)}
-}
-async function sync(){const d=await api('me');ME=d.u;CFG=d.cfg;TIM=d.tim;MINE=d.mine;if(ME.role!='siswa')GR=await api('grup')}
-async function go(k){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.id=='n_'+k));$('#mn').innerHTML='<p class="m">Memuat…</p>';try{$('#mn').innerHTML=await V[k]()}catch(e){toast(e.message,1)}}
-async function send(a,p,after){try{await api(a,p);toast('Tersimpan');await sync();after&&after()}catch(e){toast(e.message,1)}}
-const fmt=x=>x==null?'-':x.toFixed(2);
-const sc=p=>`<p class="m">1 Perlu Bimbingan · 2 Cukup · 3 Baik · 4 Sangat Baik</p>`+KN.map((n,i)=>`<div class="row"><span>${n}</span><span class="seg">${[1,2,3,4].map(v=>`<label><input type="radio" name="${p}${i}" value="${v}"><span>${v}</span></label>`).join('')}</span></div>`).join('');
-const rd=p=>{const o={};for(let i=0;i<5;i++){const e=document.querySelector(`[name=${p}${i}]:checked`);if(!e)return null;o['K'+(i+1)]=+e.value}return o};
-const opt=(a,sel)=>a.map(x=>`<option${x==sel?' selected':''}>${esc(x)}</option>`).join('');
-const ok_=`<svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#0f766e"/><path d="M7 12l3 3 7-7" stroke="#fff" stroke-width="2" fill="none"/></svg>`;
-const no_=`<svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#94a3b8" stroke-width="2"/></svg>`;
-function radar(v,s=240){const c=s/2,r=s/2-40,pt=(i,f)=>{const a=-Math.PI/2+i*2*Math.PI/5;return[c+r*f*Math.cos(a),c+r*f*Math.sin(a)]},pl=f=>[0,1,2,3,4].map(i=>pt(i,f).join(',')).join(' ');
-return`<svg viewBox="0 0 ${s} ${s}" width="${s}">${[.25,.5,.75,1].map(f=>`<polygon points="${pl(f)}" fill="none" stroke="#d9e3e1"/>`).join('')}<polygon points="${v.map((x,i)=>pt(i,(x||0)/4).join(',')).join(' ')}" fill="#0f766e55" stroke="#0f766e" stroke-width="2"/>${KN.map((n,i)=>{const[x,y]=pt(i,1.25);return`<text x="${x}" y="${y}" font-size="10" text-anchor="middle" fill="#64748b">${n.split(' ')[0]}</text>`}).join('')}</svg>`}
-const V={};
-V.tugas=()=>{const m=MINE,n=TIM.filter(x=>x.id!=ME.id).length,pe=r=>m.peer.filter(x=>x.putaran==r).length;
-const it=(d,t)=>`<div class="row"><span>${d?ok_:no_} ${t}</span></div>`;
-return`<div class="card"><h3>Halo, ${esc(ME.nama)}</h3><p class="m">Kelompok ${esc(ME.kelompok||'-')} · ${n+1} anggota</p>
-${it(m.diri.includes('awal'),'Penilaian diri awal (10 Des)')}${it(m.catatan.some(x=>x.jenis=='Kontrak kolaborasi'),'Kontrak kolaborasi kelompok')}
-${it(m.catatan.length>=6,'Jurnal harian ('+m.catatan.length+'/6 catatan)')}${it(n&&pe('awal')>=n,'Penilaian teman sebaya awal ('+pe('awal')+'/'+n+')')}
-${it(m.diri.includes('akhir'),'Penilaian diri akhir')}${it(n&&pe('akhir')>=n,'Penilaian teman sebaya akhir ('+pe('akhir')+'/'+n+')')}
-${it(m.catatan.some(x=>x.jenis=='Refleksi akhir'),'Refleksi akhir')}</div>`};
-V.diri=()=>`<div class="card"><h3>Penilaian diri</h3><label>Waktu penilaian</label><select id="j"><option value="awal">Awal (10 Des)</option><option value="akhir">Akhir (setelah plant visit)</option></select>${sc('d')}<br><button class="btn" onclick="sDiri()">Simpan</button></div>`;
-const sDiri=()=>{const s=rd('d');if(!s)return toast('Lengkapi 5 indikator',1);send('saveDiri',{jenis:$('#j').value,...s})};
-V.catatan=()=>`<div class="card"><h3>Jurnal & catatan</h3><label>Jenis</label><select id="cj">${opt(['Jurnal harian','Kontrak kolaborasi','Kartu permainan','Observasi industri','Refleksi akhir'])}</select><label>Tahap</label><select id="ct">${opt(TH)}</select><label>Isi</label><textarea id="ci" rows="6" placeholder="Apa kontribusi saya? Apa kendala tim dan bagaimana mengatasinya? Apa yang saya pelajari?"></textarea><button class="btn" onclick="sCat()">Simpan</button></div>
-<div class="card"><h3>Catatan saya</h3>${MINE.catatan.map(x=>`<div class="row"><span><b>${esc(x.jenis)}</b> · ${esc(x.tahap)}<br><span class="m">${esc(x.isi)}</span></span></div>`).join('')||'<p class="m">Belum ada catatan.</p>'}</div>`;
-const sCat=()=>{const i=$('#ci').value.trim();if(!i)return toast('Isi catatan dulu',1);send('saveCatatan',{jenis:$('#cj').value,tahap:$('#ct').value,isi:i},()=>go('catatan'))};
-V.teman=()=>{const t=TIM.filter(x=>x.id!=ME.id);return`<div class="card"><h3>Penilaian teman sebaya</h3><p class="m">Hanya dilihat guru dan admin.</p>${t.length?`<label>Teman</label><select id="tu">${t.map(x=>`<option value="${esc(x.id)}">${esc(x.nama)}</option>`).join('')}</select><label>Putaran</label><select id="tp"><option value="awal">Awal</option><option value="akhir">Akhir</option></select>${sc('t')}<label>Komentar apresiasi / saran</label><textarea id="tk" rows="3"></textarea><button class="btn" onclick="sPeer()">Simpan</button>`:'<p>Anda belum punya anggota kelompok. Hubungi admin.</p>'}</div>`};
-const sPeer=()=>{const s=rd('t');if(!s)return toast('Lengkapi 5 indikator',1);send('savePeer',{untuk:$('#tu').value,putaran:$('#tp').value,komentar:$('#tk').value,...s})};
-V.rubrik=()=>`<div class="card w"><h3>Rubrik kolaborasi</h3><table><tr><th>Indikator</th><th>4 Sangat Baik</th><th>3 Baik</th><th>2 Cukup</th><th>1 Perlu Bimbingan</th></tr>${KN.map((n,i)=>`<tr><td><b>K${i+1} ${n}</b></td>${CFG.rubrik[i].map(x=>`<td>${esc(x)}</td>`).join('')}</tr>`).join('')}</table><p class="m">Predikat: ≥${CFG.ambang[0]} Sangat Baik · ≥${CFG.ambang[1]} Baik · ≥${CFG.ambang[2]} Cukup · di bawahnya Perlu Bimbingan.</p></div>`;
-const gsel=()=>GR.length?`<label>Kelompok</label><select id="gk" onchange="fSis()">${GR.map(g=>`<option value="${esc(g.kelompok)}">${esc(g.kelompok)} - ${esc(g.nama)}</option>`).join('')}</select>`:'<p>Belum ada kelompok yang Anda bimbing.</p>';
-function fSis(){const g=GR.find(x=>x.kelompok==$('#gk').value);$('#gs').innerHTML='<option value="">Seluruh kelompok</option>'+g.anggota.map(x=>`<option value="${esc(x.id)}">${esc(x.nama)}</option>`).join('')}
-V.obs=()=>{setTimeout(()=>GR.length&&fSis());return`<div class="card"><h3>Lembar observasi</h3>${gsel()}<label>Siswa (kosongkan untuk seluruh kelompok)</label><select id="gs"></select><label>Tahap</label><select id="gt">${opt(TH)}</select>${sc('o')}<label>Catatan</label><textarea id="gc" rows="2"></textarea><button class="btn" onclick="sObs()">Simpan</button></div>`};
-const sObs=()=>{const s=rd('o');if(!s)return toast('Lengkapi 5 indikator',1);send('saveObs',{kelompok:$('#gk').value,siswa:$('#gs').value,tahap:$('#gt').value,catatan:$('#gc').value,...s})};
-V.produk=()=>`<div class="card"><h3>Penilaian produk kelompok</h3>${gsel()}<label>Produk</label><select id="pj">${opt(['Kontrak kolaborasi','Kartu permainan','Lembar temuan','Lembar perbandingan','Laporan kelompok','Seminar'])}</select><label>Skor</label><select id="ps"><option value="4">4 Sangat Baik</option><option value="3">3 Baik</option><option value="2">2 Cukup</option><option value="1">1 Perlu Bimbingan</option></select><label>Catatan</label><textarea id="pc" rows="2"></textarea><button class="btn" onclick="send('saveProduk',{kelompok:$('#gk').value,jenis:$('#pj').value,skor:$('#ps').value,catatan:$('#pc').value})">Simpan</button></div>`;
-V.rekap=async()=>{REK=await api('rekap');const ks=[...new Set(REK.map(x=>x.kelompok))].sort();
-return`<div class="card"><h3>Rekap kolaborasi</h3><button class="btn" onclick="xl()">Unduh Excel</button><button class="btn g" onclick="wd()">Unduh Word</button><label>Filter kelompok</label><select id="fk" onchange="tb()"><option value="">Semua</option>${opt(ks)}</select><div class="w" id="tb"></div></div><div id="dt"></div>`+(setTimeout(tb),'')};
-function tb(){const f=$('#fk').value;$('#tb').innerHTML='<table><tr><th>Nama</th><th>Klp</th><th>Obs</th><th>Teman</th><th>Diri</th><th>Produk</th><th>Nilai</th><th>Predikat</th></tr>'+REK.map((r,i)=>f&&r.kelompok!=f?'':`<tr class="k" onclick="dt(${i})"><td>${esc(r.nama)}</td><td>${esc(r.kelompok)}</td><td>${fmt(r.sk.obs)}</td><td>${fmt(r.sk.peer)}</td><td>${fmt(r.sk.diri)}</td><td>${fmt(r.sk.produk)}</td><td><b>${fmt(r.nilai)}</b></td><td><span class="b" style="background:${PC[r.predikat]}">${r.predikat}</span></td></tr>`).join('')+'</table>'}
-function dt(i){const r=REK[i];$('#dt').innerHTML=`<div class="card g2"><div style="text-align:center">${radar(r.ind)}</div><div><h3>${esc(r.nama)}</h3><span class="b" style="background:${PC[r.predikat]}">${r.predikat}</span> <b>${fmt(r.nilai)}</b><p>${esc(r.deskripsi)}</p><p class="m">Jurnal/catatan terkumpul: ${r.jurnal}</p>${KN.map((n,j)=>`<div class="row"><span>${n}</span><b>${fmt(r.ind[j])}</b></div>`).join('')}</div></div>`;$('#dt').scrollIntoView()}
-function xl(){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(REK.map(r=>({NIS:r.id,Nama:r.nama,Kelas:r.kelas,Kelompok:r.kelompok,Observasi:fmt(r.sk.obs),'Teman Sebaya':fmt(r.sk.peer),'Penilaian Diri':fmt(r.sk.diri),Produk:fmt(r.sk.produk),...Object.fromEntries(KN.map((n,i)=>[n,fmt(r.ind[i])])),Nilai:fmt(r.nilai),Predikat:r.predikat,Deskripsi:r.deskripsi}))),'Rekap');XLSX.writeFile(wb,'Rekap_Kolaborasi.xlsx')}
-function wd(){const h='<html><head><meta charset="utf-8"></head><body><h2>Rapor Kolaborasi Plant Visit - SMK SMTI Padang</h2>'+REK.map(r=>`<h3>${esc(r.nama)} (${esc(r.id)}) - Kelompok ${esc(r.kelompok)}</h3><p>Nilai ${fmt(r.nilai)} - <b>${r.predikat}</b></p><table border="1" cellpadding="4" style="border-collapse:collapse"><tr>${KN.map(n=>`<th>${n}</th>`).join('')}</tr><tr>${r.ind.map(x=>`<td>${fmt(x)}</td>`).join('')}</tr></table><p>${esc(r.deskripsi)}</p><br style="page-break-after:always">`).join('')+'</body></html>';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff',h],{type:'application/msword'}));a.download='Rapor_Kolaborasi.doc';a.click()}
-V.impor=()=>`<div class="card"><h3>Impor pengguna & kelompok</h3><p class="m">Unduh template, isi sheet <b>Users</b> (id, nama, role admin/guru/siswa, pin, kelompok, kelas) dan <b>Kelompok</b> (kelompok, nama, bus, pembimbing = id guru). Format kolom id dan pin sebagai teks. PIN kosong = PIN sama dengan ID. Data dengan id yang sama akan diperbarui.</p><button class="btn g" onclick="tpl()">Unduh template Excel</button><label style="margin-top:12px">Unggah file Excel terisi</label><input type="file" accept=".xlsx,.xls" onchange="imp(this)"><p id="ir" class="m"></p></div>`;
-function tpl(){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{id:'2026001',nama:'Contoh Siswa',role:'siswa',pin:'1234',kelompok:'K01',kelas:'XI TKR 1'},{id:'g001',nama:'Contoh Guru',role:'guru',pin:'1234',kelompok:'',kelas:''}]),'Users');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{kelompok:'K01',nama:'Tim Elang',bus:'Bus 1',pembimbing:'g001'}]),'Kelompok');XLSX.writeFile(wb,'Template_Import_Plant_Visit.xlsx')}
-async function imp(i){const f=i.files[0];if(!f)return;try{const wb=XLSX.read(await f.arrayBuffer()),g=n=>wb.Sheets[n]?XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:''}):[];
-const r=await api('import',{users:g('Users'),kelompok:g('Kelompok')});$('#ir').textContent=`Berhasil: ${r.users} pengguna dan ${r.kelompok} kelompok diimpor.`;toast('Impor selesai')}catch(e){toast(e.message,1)}}
+async function send(a,p,after){try{await api(a,p);toast('Tersimpan');after&&after()}catch(e){toast(e.message,1)}}
+async function doLogin(){try{const r=await call({fn:'login',id:$('#u').value,pin:$('#p').value});if(!r)return toast('ID atau PIN salah',1);T=r.token;
+const d=await api('me');ME=d.u;CFG=d.cfg;TH=d.th;TIM=d.tim;if(ME.role!='siswa')GR=await api('grup');
+$('#lg').style.display='none';$('#app').hidden=false;$('#wn').textContent=ME.nama;$('#wr').textContent=ME.role=='siswa'?'Siswa · Kelompok '+ME.kelompok:ME.role=='guru'?'Guru pembimbing':'Administrator';
+$('#nv').innerHTML=NAV[ME.role].map(k=>`<button id="n_${k}" onclick="go('${k}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[k]}"/></svg>${LB[k]}</button>`).join('');go(NAV[ME.role][0])}catch(e){toast(e.message,1)}}
+async function go(k){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.id=='n_'+k));try{$('#mn').innerHTML=await V[k]()}catch(e){toast(e.message,1)}}
+const head=(t,s)=>`<div class="ph"><h2>${t}</h2><p>${s||''}</p></div>`;
+const chip=(t,c)=>`<span class="chip" style="background:${c}1f;color:${c}">${esc(t)}</span>`;
+const st=r=>r?(r.status=='dikirim'?chip('Terkirim','#16a34a'):chip('Draf','#d97706')):chip('Belum diisi','#94a3b8');
+const kc=k=>k.slice(0,2)=='GR'?chip('Gotong Royong','#0f766e'):chip('Bernalar Kritis','#7c3aed');
+const opt=(a,s)=>a.map(x=>`<option${x==s?' selected':''}>${esc(x)}</option>`).join('');
+const fmt=x=>x==null?'-':Math.round(x)+'%';
+const pc=p=>`<span class="chip" style="background:${PC[p]};color:#fff">${p}</span>`;
+const sc=p=>['Gotong Royong','Bernalar Kritis'].map((g,gi)=>`<h4>${g}</h4>`+KD.slice(gi*3,gi*3+3).map((k,i)=>`<div class="row"><span>${AN[gi*3+i]}</span><span class="seg">${[1,2,3,4].map(v=>`<label><input type="radio" name="${p}${k}" value="${v}"><span>${v}</span></label>`).join('')}</span></div>`).join('')).join('');
+const rd=p=>{const o={};for(const k of KD){const e=document.querySelector(`[name=${p}${k}]:checked`);if(!e)return null;o[k]=+e.value}return o};
+function radar(v,s=270){const c=s/2,r=s/2-48,pt=(i,f)=>{const a=-Math.PI/2+i*Math.PI/3;return[c+r*f*Math.cos(a),c+r*f*Math.sin(a)]},pl=f=>v.map((_,i)=>pt(i,f).join(',')).join(' ');
+return`<svg viewBox="0 0 ${s} ${s}" width="100%" style="max-width:${s}px">${[.25,.5,.75,1].map(f=>`<polygon points="${pl(f)}" fill="none" stroke="#e2e8f0"/>`).join('')}<polygon points="${v.map((x,i)=>pt(i,(x||0)/100).join(',')).join(' ')}" fill="#0b5f5a40" stroke="#0b5f5a" stroke-width="2"/>${AN.map((n,i)=>{const[x,y]=pt(i,1.22);return`<text x="${x}" y="${y}" font-size="10" text-anchor="middle" fill="#64748b">${n.split(' ')[0]}</text>`}).join('')}</svg>`}
+/* ===== SISWA ===== */
+const ed=(tp,ti,h,r)=>{const lk=r&&r.status=='dikirim';return`<div class="card"><div class="sp"><h3>${ti}</h3>${st(r)}</div><p class="m">${h}</p><textarea id="e_${tp}" rows="6" ${lk?'disabled':''}>${esc(r?r.isi.trim():'')}</textarea>${r?`<p class="m">Terakhir diubah: ${esc(r.oleh)} · ${new Date(r.waktu).toLocaleString('id-ID')}</p>`:''}${lk?'':`<button class="btn g" onclick="sv('${tp}',0)">Simpan draf</button><button class="btn" onclick="sv('${tp}',1)">Kirim</button>`}${tp=='tugas'?'<button class="btn g" onclick="go(\'tugas\')">Muat ulang</button>':''}</div>`};
+async function sv(tp,k){const i=$('#e_'+tp).value.trim();if(!i)return toast('Isi terlebih dahulu',1);if(k&&!confirm('Setelah dikirim tidak dapat diubah. Kirim sekarang?'))return;await send('saveEnt',{tipe:tp,tahap:TS,isi:i,kirim:k},()=>go('tugas'))}
+V.tugas=async()=>{ENT=await api('ent');const t=TS,X=TH[t],j=ENT.jurnal.find(x=>x.tahap==t),g=ENT.tugas.find(x=>x.tahap==t);
+const dot=i=>{const a=ENT.jurnal.find(x=>x.tahap==i),b=ENT.tugas.find(x=>x.tahap==i);return a&&a.status=='dikirim'&&b&&b.status=='dikirim'?'#16a34a':(a||b)?'#d97706':'#cbd5e1'};
+return head('Tugas & jurnal','Isian kelompok dapat disunting semua anggota sampai dikirim.')+`<div class="tabs">${TH.map((x,i)=>`<button class="tab${i==t?' on':''}" onclick="TS=${i};go('tugas')"><i style="background:${dot(i)}"></i>Tahap ${i+1}</button>`).join('')}</div>
+<div class="card"><h3>${esc(X.n)}</h3><p class="m" style="margin:0">${esc(X.t)}</p></div>`
++ed('tugas','Tugas kelompok','Perencanaan, pembagian tugas/peran, dan hasil kerja kelompok.',g)+ed('jurnal','Jurnal harian saya','Kontribusi saya, kendala, dan hal yang saya pelajari.',j)
++`<div class="card"><h3>Yang dinilai pada tahap ini</h3>${X.i.map(i=>`<div class="row"><span>${kc(i.k)} ${esc(i.x)}</span><span class="m">${i.l=='K'?'Kelompok':'Individu'}</span></div>`).join('')}</div>`};
+V.nilai=async()=>{ENT=await api('ent');const t=TIM.filter(x=>x.id!=ME.id),n=new Set(ENT.nilai.filter(x=>x.jenis=='peer').map(x=>x.untuk)).size;
+return head('Penilaian diri & teman','Skala: 1 Perlu bimbingan · 2 Cukup · 3 Baik · 4 Sangat baik. Penilaian teman hanya dilihat guru.')+`<div class="card"><div class="tabs"><button class="tab${NM=='diri'?' on':''}" onclick="NM='diri';go('nilai')">Diri sendiri</button><button class="tab${NM=='peer'?' on':''}" onclick="NM='peer';go('nilai')">Teman sebaya (${n}/${t.length})</button></div>
+${NM=='peer'?`<label>Teman</label><select id="nu">${t.map(x=>`<option value="${esc(x.id)}">${esc(x.nama)}</option>`).join('')}</select>`:''}<label>Putaran</label><select id="np"><option value="awal">Awal</option><option value="akhir">Akhir</option></select>${sc('n')}<br><button class="btn" onclick="sNil()">Simpan</button></div>`};
+async function sNil(){const v=rd('n');if(!v)return toast('Lengkapi semua aspek',1);await send('saveNilai',{jenis:NM,untuk:NM=='peer'?$('#nu').value:'',putaran:$('#np').value,v},()=>go('nilai'))}
+/* ===== FILTER GURU ===== */
+const ALL=()=>GR.flatMap(g=>g.anggota.map(s=>({...s,kelompok:g.kelompok,bus:g.bus})));
+const uq=a=>[...new Set(a)].filter(Boolean).sort();
+const fa=()=>ALL().filter(s=>(!F.bus||s.bus==F.bus)&&(!F.kelas||s.kelas==F.kelas)&&(!F.kel||s.kelompok==F.kel));
+const sel=(l,v,a,k,cb)=>`<div><label>${l}</label><select onchange="F.${k}=this.value;${cb}()"><option value="">Semua</option>${opt(a,v)}</select></div>`;
+const fl=cb=>`<div class="card fl">${uq(GR.map(g=>g.bus)).length>1?sel('Bus',F.bus,uq(GR.map(g=>g.bus)),'bus',cb):''}${sel('Kelas',F.kelas,uq(ALL().map(s=>s.kelas)),'kelas',cb)}${sel('Kelompok',F.kel,uq(GR.map(g=>g.kelompok)),'kel',cb)}</div>`;
+/* ===== PANTAU ===== */
+V.pantau=async()=>{PD=await api('pantau',{tahap:PT});
+return head('Pantau pengisian','Status jurnal individu, tugas kelompok, dan penilaian siswa per tahap.')+`<div class="card"><label>Tahap</label><select onchange="PT=+this.value;go('pantau')" style="margin-bottom:0">${TH.map((x,i)=>`<option value="${i}"${i==PT?' selected':''}>${i+1}. ${esc(x.n)}</option>`).join('')}</select></div>`+fl('tbP')+`<div class="stat" id="sm"></div><div class="card w" id="tb"></div>`+(setTimeout(tbP),'')};
+function tbP(){const S=fa(),j=s=>PD.ent.find(x=>x.tipe=='jurnal'&&x.siswa==s.id),g=s=>PD.ent.find(x=>x.tipe=='tugas'&&x.kelompok==s.kelompok);PR=[];
+const bt=(r,i)=>r?` <a href="#" onclick="lihat(${i});return false">lihat</a>`:'';
+const rw=S.map(s=>{const a=j(s),b=g(s),n=new Set(PD.nil.filter(x=>x.jenis=='peer'&&x.dari==s.id).map(x=>x.untuk)).size,tot=ALL().filter(x=>x.kelompok==s.kelompok).length-1,d=PD.nil.some(x=>x.jenis=='diri'&&x.dari==s.id);
+const i=PR.push(a)-1,i2=PR.push(b)-1;return`<tr><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${esc(s.kelompok)}</td><td>${st(a)}${bt(a,i)}</td><td>${st(b)}${bt(b,i2)}</td><td>${d?'✓':'–'}</td><td>${n}/${tot}</td></tr>`}).join('');
+$('#sm').innerHTML=`<div><b>${S.length}</b>Siswa</div><div><b>${S.filter(s=>(j(s)||{}).status=='dikirim').length}</b>Jurnal terkirim</div><div><b>${S.filter(s=>!j(s)).length}</b>Jurnal belum diisi</div><div><b>${uq(S.filter(s=>(g(s)||{}).status=='dikirim').map(s=>s.kelompok)).length}/${uq(S.map(s=>s.kelompok)).length}</b>Tugas kelompok terkirim</div>`;
+$('#tb').innerHTML=`<table><tr><th>Nama</th><th>Kelas</th><th>Klp</th><th>Jurnal</th><th>Tugas kelompok</th><th>Diri</th><th>Teman</th></tr>${rw}</table>`}
+function lihat(i){const r=PR[i];$('#dc').innerHTML=`<h3>${r.tipe=='tugas'?'Tugas kelompok '+esc(r.kelompok):'Jurnal'}</h3><p class="m">${esc(r.oleh)} · ${new Date(r.waktu).toLocaleString('id-ID')}</p><p style="white-space:pre-wrap">${esc(r.isi.trim())}</p>`;dlg.showModal()}
+/* ===== OBSERVASI ===== */
+V.obs=async()=>{if(!OK&&GR.length)OK=GR[0].kelompok;const g=GR.find(x=>x.kelompok==OK);
+return head('Lembar observasi','Centang indikator yang terlihat. Indikator kelompok otomatis berlaku untuk seluruh anggota kelompok.')+(g?`<div class="card fl"><div><label>Kelompok</label><select onchange="OK=this.value;go('obs')">${GR.map(x=>`<option value="${esc(x.kelompok)}"${x.kelompok==OK?' selected':''}>${esc(x.kelompok)} · ${esc(x.nama)} (${esc(x.bus)})</option>`).join('')}</select></div>
+<div><label>Tahap</label><select onchange="OT=+this.value;go('obs')">${TH.map((x,i)=>`<option value="${i}"${i==OT?' selected':''}>${i+1}. ${esc(x.n)}</option>`).join('')}</select></div>
+<div><label>Kelas</label><select onchange="F.kelas=this.value;go('obs')"><option value="">Semua</option>${opt(uq(g.anggota.map(s=>s.kelas)),F.kelas)}</select></div></div>`+await obsTbl(g):'<div class="card">Belum ada kelompok yang Anda bimbing.</div>')};
+async function obsTbl(g){const D=await api('obsGet',{kelompok:OK,tahap:OT}),X=TH[OT],S=g.anggota.filter(s=>!F.kelas||s.kelas==F.kelas);
+const v=(i,s)=>{const r=D.find(x=>x.kode==i.k&&(i.l=='K'?!x.siswa:x.siswa==s));return r&&r.nilai?'checked':''};
+return`<div class="card w"><table><tr><th>Nama</th><th>Kelas</th>${X.i.map(i=>`<th title="${esc(i.x)}">${i.k}<br><span class="m">${i.l=='K'?'Kelompok':'Individu'}</span></th>`).join('')}</tr>
+${S.map(s=>`<tr><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td>${X.i.map(i=>`<td><input type="checkbox" data-k="${i.k}" data-s="${esc(s.id)}" ${v(i,s.id)} ${i.l=='K'?'onchange="grpk(this)"':''}></td>`).join('')}</tr>`).join('')}</table></div>
+<div class="card"><h3>Keterangan indikator</h3>${X.i.map(i=>`<div class="row"><span>${kc(i.k)} <b>${i.k}</b> ${esc(i.x)}</span><span class="m">${i.l=='K'?'Kelompok':'Individu'}</span></div>`).join('')}<br><button class="btn" onclick="svObs()">Simpan observasi</button></div>`}
+function grpk(e){document.querySelectorAll(`input[data-k=${e.dataset.k}]`).forEach(c=>c.checked=e.checked)}
+async function svObs(){const items=[],X=TH[OT];X.i.forEach(i=>{const c=[...document.querySelectorAll(`input[data-k=${i.k}]`)];if(!c.length)return;if(i.l=='K')items.push({kode:i.k,siswa:'',nilai:c[0].checked});else c.forEach(e=>items.push({kode:i.k,siswa:e.dataset.s,nilai:e.checked}))});await send('saveObs',{kelompok:OK,tahap:OT,items})}
+/* ===== REKAP ===== */
+const RF=()=>{const ids=new Set(fa().map(s=>s.id));return REK.filter(r=>ids.has(r.id))};
+V.rekap=async()=>{REK=await api('rekap');return head('Rekap & predikat','Nilai gabungan observasi, penilaian diri, dan teman sebaya (bobot diatur admin).')+fl('tbR')+`<div class="card"><button class="btn" onclick="xl()">Unduh Excel</button><button class="btn g" onclick="wd()">Unduh Word</button></div><div class="card w" id="tb"></div><div id="dt"></div>`+(setTimeout(tbR),'')};
+function tbR(){const R=RF();$('#tb').innerHTML=`<table><tr><th>Nama</th><th>Kelas</th><th>Klp</th><th>Gotong Royong</th><th>Bernalar Kritis</th></tr>${R.map(r=>`<tr class="k" onclick="dt('${esc(r.id)}')"><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${esc(r.kelompok)}</td><td>${fmt(r.gr)} ${pc(r.pg)}</td><td>${fmt(r.bk)} ${pc(r.pb)}</td></tr>`).join('')}</table>`}
+function dt(id){const r=REK.find(x=>x.id==id);$('#dt').innerHTML=`<div class="card g2"><div style="text-align:center">${radar(r.asp)}</div><div><h3>${esc(r.nama)} · ${esc(r.kelas)}</h3><p>${esc(r.deskripsi)}</p>${AN.map((n,i)=>`<div class="row"><span>${kc(KD[i])} ${n}</span><b>${fmt(r.asp[i])}</b></div>`).join('')}</div></div>`;$('#dt').scrollIntoView({behavior:'smooth'})}
+function xl(){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(RF().map(r=>({ID:r.id,Nama:r.nama,Kelas:r.kelas,Kelompok:r.kelompok,Bus:r.bus,...Object.fromEntries(AN.map((n,i)=>[KD[i]+' '+n,fmt(r.asp[i])])),'Gotong Royong':fmt(r.gr),'Predikat GR':r.pg,'Bernalar Kritis':fmt(r.bk),'Predikat BK':r.pb,Deskripsi:r.deskripsi}))),'Rekap');XLSX.writeFile(wb,'Rekap_Karakter.xlsx')}
+function wd(){const h='<html><head><meta charset="utf-8"></head><body><h2>Rapor Karakter Plant Visit - SMK SMTI Padang</h2>'+RF().map(r=>`<h3>${esc(r.nama)} (${esc(r.id)}) - ${esc(r.kelas)} - Kelompok ${esc(r.kelompok)}</h3><table border="1" cellpadding="4" style="border-collapse:collapse"><tr><th>Karakter</th><th>Nilai</th><th>Predikat</th></tr><tr><td>Gotong Royong</td><td>${fmt(r.gr)}</td><td>${r.pg}</td></tr><tr><td>Bernalar Kritis</td><td>${fmt(r.bk)}</td><td>${r.pb}</td></tr></table><p>${esc(r.deskripsi)}</p><br style="page-break-after:always">`).join('')+'</body></html>';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff',h],{type:'application/msword'}));a.download='Rapor_Karakter.doc';a.click()}
+/* ===== INDIKATOR ===== */
+V.rubrik=()=>head('Indikator & rubrik','Indikator kelompok (K) otomatis berlaku untuk seluruh anggota; indikator individu (I) dicentang per siswa.')
++TH.map((x,i)=>`<div class="card w"><h3>Tahap ${i+1}: ${esc(x.n)}</h3><table>${x.i.map(n=>`<tr><td style="width:150px">${kc(n.k)}</td><td><b>${n.k}</b> ${esc(n.x)}</td><td class="m">${n.l=='K'?'Kelompok':'Individu'}</td></tr>`).join('')}</table></div>`).join('')
++`<div class="card w"><h3>Predikat (skor gabungan)</h3><table><tr><th>Predikat</th><th>Batas</th><th>Gotong Royong</th><th>Bernalar Kritis</th></tr>
+<tr><td>${pc('Sangat Baik')}</td><td>≥ ${CFG.ambang[0]}%</td><td>Konsisten berkolaborasi, peduli, dan berbagi, termasuk tanpa diminta</td><td>Konsisten bertanya, beralasan dengan bukti, dan menyimpulkan logis</td></tr>
+<tr><td>${pc('Baik')}</td><td>≥ ${CFG.ambang[1]}%</td><td>Umumnya berkolaborasi dan peduli</td><td>Umumnya bertanya dan memberi alasan</td></tr>
+<tr><td>${pc('Cukup')}</td><td>≥ ${CFG.ambang[2]}%</td><td>Bekerja sama jika diminta atau dengan teman dekat</td><td>Bertanya dan beralasan pada sebagian tahap</td></tr>
+<tr><td>${pc('Perlu Bimbingan')}</td><td>&lt; ${CFG.ambang[2]}%</td><td>Jarang terlibat dan kurang peka</td><td>Jarang bertanya atau memberi alasan</td></tr></table></div>`;
+/* ===== IMPOR ===== */
+V.impor=()=>head('Impor data','Pengguna dan kelompok dari Excel.')+`<div class="card"><p class="m">Isi sheet <b>Users</b> (id, nama, role admin/guru/siswa, pin, kelompok, kelas) dan <b>Kelompok</b> (kelompok, nama, bus, pembimbing = id guru). Satu bus berisi beberapa kelompok dengan guru pembimbing yang sama. Format kolom id dan pin sebagai teks. PIN kosong = PIN sama dengan ID.</p><button class="btn g" onclick="tpl()">Unduh template Excel</button><label style="margin-top:12px">Unggah file Excel terisi</label><input type="file" accept=".xlsx,.xls" onchange="imp(this)"><p id="ir" class="m"></p></div>`;
+function tpl(){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{id:'2026001',nama:'Contoh Siswa',role:'siswa',pin:'1234',kelompok:'B1-K1',kelas:'XI TKR 1'},{id:'g001',nama:'Contoh Guru',role:'guru',pin:'1234',kelompok:'',kelas:''}]),'Users');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{kelompok:'B1-K1',nama:'Tim Elang',bus:'Bus 1',pembimbing:'g001'}]),'Kelompok');XLSX.writeFile(wb,'Template_Import_Plant_Visit.xlsx')}
+async function imp(i){const f=i.files[0];if(!f)return;try{const wb=XLSX.read(await f.arrayBuffer()),g=n=>wb.Sheets[n]?XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:''}):[];const r=await api('import',{users:g('Users'),kelompok:g('Kelompok')});$('#ir').textContent=`Berhasil: ${r.users} pengguna dan ${r.kelompok} kelompok diimpor.`;toast('Impor selesai')}catch(e){toast(e.message,1)}}
 </script>
 <script src="setting.js"></script>
 </body></html>
