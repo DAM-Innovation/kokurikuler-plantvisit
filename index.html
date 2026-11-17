@@ -16,11 +16,11 @@ main{padding:24px;max-width:1120px;width:100%}
 .ph h2{margin:0;font-size:22px}.ph p{margin:2px 0 16px;color:var(--m)}
 .card{background:var(--c);border:1px solid var(--l);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px #0f172a0a}
 h3{margin:0 0 6px;font-size:15px}h4{margin:14px 0 2px;color:var(--p)}.m{color:var(--m);font-size:13px}.sp{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.gd{background:#eaf4f2;border-left:3px solid var(--p);padding:8px 12px;border-radius:6px;font-size:13px;color:#33504d;margin:6px 0 8px}
 label{font-size:12px;font-weight:600;color:var(--m);display:block}
 input,select,textarea{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;margin:4px 0 10px;background:#fff}
-input:focus,select:focus,textarea:focus{outline:2px solid #0b5f5a55;border-color:var(--p)}
-textarea:disabled{background:#f1f5f9}
-.btn{background:var(--p);color:#fff;border:0;padding:9px 16px;border-radius:9px;cursor:pointer;font:inherit;font-weight:600;margin:0 6px 4px 0}.btn.g{background:#fff;color:var(--p);border:1px solid var(--p)}
+input:focus,select:focus,textarea:focus{outline:2px solid #0b5f5a55;border-color:var(--p)}textarea:disabled{background:#f1f5f9}
+.btn{background:var(--p);color:#fff;border:0;padding:9px 16px;border-radius:9px;cursor:pointer;font:inherit;font-weight:600;margin:0 6px 4px 0}.btn.g{background:#fff;color:var(--p);border:1px solid var(--p)}.btn.r{background:#fff;color:#b45309;border:1px solid #d97706}
 .chip{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tab{display:flex;align-items:center;gap:6px;border:1px solid var(--l);background:#fff;border-radius:99px;padding:6px 14px;cursor:pointer;font:inherit}.tab.on{background:var(--p);color:#fff;border-color:var(--p)}.tab i{width:8px;height:8px;border-radius:50%}
@@ -43,29 +43,35 @@ dialog{border:0;border-radius:14px;max-width:560px;width:92%;padding:20px}dialog
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const API_URL='https://script.google.com/macros/s/AKfycbzpnqhFUZueGXq4jywbp7VTdUw6tsO-loIng6kqVIvjQWD5xrlG8WVR3IGZ-uDLVAqy/exec';
-let T,ME,CFG,TH=[],TIM=[],GR=[],REK=[],ENT,PD,PR=[],TS=0,PT=0,NM='diri',OK='',OT=0,F={bus:'',kelas:'',kel:''};
+let T,ME,CFG,TH=[],SEC=[],TIM=[],GR=[],REK=[],ENT,PD,PR=[],CUR='',TS=0,PT=0,NM='diri',DK='p',GK='',OK='',OT=0,F={bus:'',kelas:'',kel:''};
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const KD=['GR1','GR2','GR3','BK1','BK2','BK3'],AN=['Kolaborasi','Kepedulian','Berbagi','Mencari & mengolah informasi','Menalar & mengevaluasi','Merefleksi & memutuskan'];
+const KD=['GR1','GR2','GR3','BK1','BK2','BK3'],AN=['Kolaborasi','Kepedulian','Berbagi','Mencari & mengolah informasi','Menalar & mengevaluasi','Merefleksi & memutuskan'],DN={p:'Proposal',l:'Laporan'};
 const PC={'Sangat Baik':'#0f766e','Baik':'#2563eb','Cukup':'#d97706','Perlu Bimbingan':'#dc2626','Belum ada data':'#94a3b8'};
+const DS={draft:['Draf','#94a3b8'],dikirim:['Terkirim · menunggu tinjauan guru','#2563eb'],dikembalikan:['Dikembalikan guru untuk diperbaiki','#d97706'],disetujui:['Disetujui guru','#16a34a']};
 const LOGO='<svg width="32" height="32" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="14" cy="14" r="4"/><circle cx="5" cy="7" r="2.5"/><circle cx="23" cy="7" r="2.5"/><circle cx="5" cy="21" r="2.5"/><circle cx="23" cy="21" r="2.5"/><path d="M7 8.5l4 3.5M21 8.5l-4 3.5M7 19.5l4-3.5M21 19.5l-4-3.5"/></svg>';
 $('#lg1').innerHTML=LOGO;$('#lg2').innerHTML=LOGO;
-const IC={tugas:'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',nilai:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',pantau:'M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',obs:'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9zM9 14l2 2 4-4',rekap:'M18 20V10M12 20V4M6 20v-6',impor:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12',setting:'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',rubrik:'M3 3h18v18H3zM3 9h18M9 21V9'};
-const LB={tugas:'Tugas & jurnal',nilai:'Penilaian',pantau:'Pantau pengisian',obs:'Observasi',rekap:'Rekap & predikat',impor:'Impor data',setting:'Pengaturan',rubrik:'Indikator & rubrik'};
-const NAV={siswa:['tugas','nilai','rubrik'],guru:['pantau','obs','rekap','rubrik'],admin:['pantau','obs','rekap','impor','setting','rubrik']};
+const IC={tugas:'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',dok:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8',nilai:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',pantau:'M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',obs:'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9zM9 14l2 2 4-4',rekap:'M18 20V10M12 20V4M6 20v-6',impor:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12',setting:'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',rubrik:'M3 3h18v18H3zM3 9h18M9 21V9'};
+const LB={tugas:'Tugas & jurnal',dok:'Proposal & laporan',nilai:'Penilaian',pantau:'Pantau pengisian',obs:'Observasi',rekap:'Rekap & predikat',impor:'Impor data',setting:'Pengaturan',rubrik:'Indikator & rubrik'};
+const NAV={siswa:['tugas','dok','nilai','rubrik'],guru:['pantau','obs','dok','rekap','rubrik'],admin:['pantau','obs','dok','rekap','impor','setting','rubrik']};
 const V={};
-async function call(b){const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)});const d=await r.json();if(d.error)throw new Error(d.error);return d.data}
+async function call(b){if(API_URL.startsWith('GANTI'))throw new Error('API_URL di index.html belum diisi dengan URL /exec');
+let r;try{r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)})}catch(e){throw new Error('Tidak dapat terhubung ke server. Periksa URL /exec dan akses deployment (Siapa saja)')}
+let d;try{d=JSON.parse(await r.text())}catch(e){throw new Error('Respons server bukan JSON. Pastikan deployment memakai versi terbaru dan akses Siapa saja')}
+if(d.error)throw new Error(d.error);return d.data}
 const api=(a,p)=>call({fn:'api',t:T,a,p:p||{}}).catch(e=>{if(/SESI/.test(e.message))out();throw e});
-function toast(m,e){const t=$('#toast');t.textContent=m;t.style.background=e?'#b91c1c':'#14232b';t.style.display='block';setTimeout(()=>t.style.display='none',2800)}
+function toast(m,e){const t=$('#toast');t.textContent=m;t.style.background=e?'#b91c1c':'#14232b';t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
 function out(){T=null;$('#app').hidden=true;$('#lg').style.display='block'}
 async function send(a,p,after){try{await api(a,p);toast('Tersimpan');after&&after()}catch(e){toast(e.message,1)}}
 async function doLogin(){try{const r=await call({fn:'login',id:$('#u').value,pin:$('#p').value});if(!r)return toast('ID atau PIN salah',1);T=r.token;
-const d=await api('me');ME=d.u;CFG=d.cfg;TH=d.th;TIM=d.tim;if(ME.role!='siswa')GR=await api('grup');
+const d=await api('me');ME=d.u;CFG=d.cfg;TH=d.th;SEC=d.sec;TIM=d.tim;if(ME.role!='siswa')GR=await api('grup');
 $('#lg').style.display='none';$('#app').hidden=false;$('#wn').textContent=ME.nama;$('#wr').textContent=ME.role=='siswa'?'Siswa · Kelompok '+ME.kelompok:ME.role=='guru'?'Guru pembimbing':'Administrator';
 $('#nv').innerHTML=NAV[ME.role].map(k=>`<button id="n_${k}" onclick="go('${k}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[k]}"/></svg>${LB[k]}</button>`).join('');go(NAV[ME.role][0])}catch(e){toast(e.message,1)}}
-async function go(k){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.id=='n_'+k));try{$('#mn').innerHTML=await V[k]()}catch(e){toast(e.message,1)}}
+async function go(k){CUR=k;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.id=='n_'+k));try{$('#mn').innerHTML=await V[k]()}catch(e){toast(e.message,1)}}
 const head=(t,s)=>`<div class="ph"><h2>${t}</h2><p>${s||''}</p></div>`;
 const chip=(t,c)=>`<span class="chip" style="background:${c}1f;color:${c}">${esc(t)}</span>`;
 const st=r=>r?(r.status=='dikirim'?chip('Terkirim','#16a34a'):chip('Draf','#d97706')):chip('Belum diisi','#94a3b8');
+const dchip=s=>{const d=DS[(s&&s.status)||'draft'];return chip(d[0],d[1])};
+const ed_=s=>!s||s.status=='draft'||s.status=='dikembalikan';
 const kc=k=>k.slice(0,2)=='GR'?chip('Gotong Royong','#0f766e'):chip('Bernalar Kritis','#7c3aed');
 const opt=(a,s)=>a.map(x=>`<option${x==s?' selected':''}>${esc(x)}</option>`).join('');
 const fmt=x=>x==null?'-':Math.round(x)+'%';
@@ -74,19 +80,46 @@ const sc=p=>['Gotong Royong','Bernalar Kritis'].map((g,gi)=>`<h4>${g}</h4>`+KD.s
 const rd=p=>{const o={};for(const k of KD){const e=document.querySelector(`[name=${p}${k}]:checked`);if(!e)return null;o[k]=+e.value}return o};
 function radar(v,s=270){const c=s/2,r=s/2-48,pt=(i,f)=>{const a=-Math.PI/2+i*Math.PI/3;return[c+r*f*Math.cos(a),c+r*f*Math.sin(a)]},pl=f=>v.map((_,i)=>pt(i,f).join(',')).join(' ');
 return`<svg viewBox="0 0 ${s} ${s}" width="100%" style="max-width:${s}px">${[.25,.5,.75,1].map(f=>`<polygon points="${pl(f)}" fill="none" stroke="#e2e8f0"/>`).join('')}<polygon points="${v.map((x,i)=>pt(i,(x||0)/100).join(',')).join(' ')}" fill="#0b5f5a40" stroke="#0b5f5a" stroke-width="2"/>${AN.map((n,i)=>{const[x,y]=pt(i,1.22);return`<text x="${x}" y="${y}" font-size="10" text-anchor="middle" fill="#64748b">${n.split(' ')[0]}</text>`}).join('')}</svg>`}
+/* ===== BAGIAN PROPOSAL / LAPORAN (dipakai siswa) ===== */
+const secEd=(s,B,lk)=>{const r=B.find(x=>x.bagian==s.id),v=r?r.isi.trim():'';return`<div class="card"><div class="sp"><h3>${esc(s.b)} · ${esc(s.j)}</h3>${chip(DN[s.d],s.d=='p'?'#0f766e':'#7c3aed')}</div><div class="gd"><b>Petunjuk:</b> ${esc(s.g)}</div><textarea class="bg" data-b="${s.id}" data-o="${esc(v)}" rows="5" ${lk?'disabled':''}>${esc(v)}</textarea>${r?`<p class="m" style="margin:0">Terakhir diubah: ${esc(r.oleh)} · ${new Date(r.waktu).toLocaleString('id-ID')}</p>`:''}</div>`};
+const chg=()=>[...document.querySelectorAll('.bg:not([disabled])')].filter(e=>e.value.trim()!==e.dataset.o.trim()).map(e=>({bagian:e.dataset.b,isi:e.value.trim()}));
+async function saveBags(){const items=chg();if(!items.length)return toast('Tidak ada perubahan');await send('saveBag',{items},()=>go(CUR))}
+async function kirimDok(){try{const n=[...document.querySelectorAll('.bg:not([disabled])')].filter(e=>!e.value.trim()).length;
+if(!confirm((n?n+' bagian masih kosong. ':'')+'Setelah dikirim, '+DN[DK].toLowerCase()+' terkunci sampai guru mengembalikan. Kirim sekarang?'))return;
+const items=chg();if(items.length)await api('saveBag',{items});await api('kirimDok',{dok:DK});toast('Terkirim ke guru');go('dok')}catch(e){toast(e.message,1)}}
 /* ===== SISWA ===== */
-const ed=(tp,ti,h,r)=>{const lk=r&&r.status=='dikirim';return`<div class="card"><div class="sp"><h3>${ti}</h3>${st(r)}</div><p class="m">${h}</p><textarea id="e_${tp}" rows="6" ${lk?'disabled':''}>${esc(r?r.isi.trim():'')}</textarea>${r?`<p class="m">Terakhir diubah: ${esc(r.oleh)} · ${new Date(r.waktu).toLocaleString('id-ID')}</p>`:''}${lk?'':`<button class="btn g" onclick="sv('${tp}',0)">Simpan draf</button><button class="btn" onclick="sv('${tp}',1)">Kirim</button>`}${tp=='tugas'?'<button class="btn g" onclick="go(\'tugas\')">Muat ulang</button>':''}</div>`};
-async function sv(tp,k){const i=$('#e_'+tp).value.trim();if(!i)return toast('Isi terlebih dahulu',1);if(k&&!confirm('Setelah dikirim tidak dapat diubah. Kirim sekarang?'))return;await send('saveEnt',{tipe:tp,tahap:TS,isi:i,kirim:k},()=>go('tugas'))}
-V.tugas=async()=>{ENT=await api('ent');const t=TS,X=TH[t],j=ENT.jurnal.find(x=>x.tahap==t),g=ENT.tugas.find(x=>x.tahap==t);
-const dot=i=>{const a=ENT.jurnal.find(x=>x.tahap==i),b=ENT.tugas.find(x=>x.tahap==i);return a&&a.status=='dikirim'&&b&&b.status=='dikirim'?'#16a34a':(a||b)?'#d97706':'#cbd5e1'};
-return head('Tugas & jurnal','Isian kelompok dapat disunting semua anggota sampai dikirim.')+`<div class="tabs">${TH.map((x,i)=>`<button class="tab${i==t?' on':''}" onclick="TS=${i};go('tugas')"><i style="background:${dot(i)}"></i>Tahap ${i+1}</button>`).join('')}</div>
-<div class="card"><h3>${esc(X.n)}</h3><p class="m" style="margin:0">${esc(X.t)}</p></div>`
-+ed('tugas','Tugas kelompok','Perencanaan, pembagian tugas/peran, dan hasil kerja kelompok.',g)+ed('jurnal','Jurnal harian saya','Kontribusi saya, kendala, dan hal yang saya pelajari.',j)
+const ed=(ti,h,r)=>{const lk=r&&r.status=='dikirim';return`<div class="card"><div class="sp"><h3>${ti}</h3>${st(r)}</div><p class="m">${h}</p><textarea id="e_j" rows="6" ${lk?'disabled':''}>${esc(r?r.isi.trim():'')}</textarea>${r?`<p class="m">Terakhir diubah: ${new Date(r.waktu).toLocaleString('id-ID')}</p>`:''}${lk?'':`<button class="btn g" onclick="sv(0)">Simpan draf</button><button class="btn" onclick="sv(1)">Kirim</button>`}</div>`};
+async function sv(k){const i=$('#e_j').value.trim();if(!i)return toast('Isi terlebih dahulu',1);if(k&&!confirm('Setelah dikirim jurnal tidak dapat diubah. Kirim sekarang?'))return;await send('saveEnt',{tahap:TH[TS].id,isi:i,kirim:k},()=>go('tugas'))}
+V.tugas=async()=>{ENT=await api('ent');const X=TH[TS],j=ENT.jurnal.find(x=>x.tahap==X.id),L=SEC.filter(s=>s.t.includes(X.id)),lk=d=>!ed_(ENT.st.find(x=>x.dok==d));
+const dot=i=>{const a=ENT.jurnal.find(x=>x.tahap==TH[i].id);return a?(a.status=='dikirim'?'#16a34a':'#d97706'):'#cbd5e1'};
+return head('Tugas & jurnal','Team building (10 Des) tidak dinilai. Penilaian karakter dimulai sejak perjalanan 13 Des sampai kepulangan.')
++`<div class="tabs">${TH.map((x,i)=>`<button class="tab${i==TS?' on':''}" onclick="TS=${i};go('tugas')"><i style="background:${dot(i)}"></i>${esc(x.n.split(' (')[0])}</button>`).join('')}</div>
+<div class="card"><h3>${esc(X.n)}</h3><p class="m" style="margin:0">Bagian proposal dan laporan kelompok untuk tahap ini ada di bawah, lengkap dengan petunjuk pengisian. Seluruh anggota kelompok dapat menyuntingnya sampai dokumen dikirim.</p></div>`
++(L.length?L.map(s=>secEd(s,ENT.bag,lk(s.d))).join('')+(L.some(s=>!lk(s.d))?`<button class="btn" onclick="saveBags()">Simpan perubahan bagian</button><button class="btn g" onclick="go('dok')">Buka seluruh dokumen</button>`:'<p class="m">Dokumen terkunci. Buka menu Proposal & laporan untuk melihat statusnya.</p>'):'<div class="card m">Tahap ini tidak memiliki bagian proposal atau laporan khusus.</div>')
++ed('Jurnal harian saya','Kontribusi saya, kendala, dan hal yang saya pelajari pada tahap ini.',j)
 +`<div class="card"><h3>Yang dinilai pada tahap ini</h3>${X.i.map(i=>`<div class="row"><span>${kc(i.k)} ${esc(i.x)}</span><span class="m">${i.l=='K'?'Kelompok':'Individu'}</span></div>`).join('')}</div>`};
+async function dokS(){ENT=await api('ent');const s=ENT.st.find(x=>x.dok==DK),ok=ed_(s),L=SEC.filter(x=>x.d==DK);
+return head('Proposal & laporan kelompok','Disunting bersama anggota kelompok. Setelah dikirim, dokumen terkunci sampai dikembalikan guru.')
++`<div class="tabs">${['p','l'].map(k=>`<button class="tab${k==DK?' on':''}" onclick="DK='${k}';go('dok')">${k=='p'?'Bagian I: Proposal':'Bagian II: Laporan'}</button>`).join('')}</div>
+<div class="card"><div class="sp"><h3>Status ${DN[DK].toLowerCase()}</h3>${dchip(s)}</div>${s&&s.catatan&&s.catatan.trim()?`<div class="gd"><b>Catatan guru:</b> ${esc(s.catatan.trim())}</div>`:''}
+${ok?`<button class="btn" onclick="saveBags()">Simpan perubahan</button><button class="btn g" onclick="kirimDok()">Kirim ${DN[DK].toLowerCase()} ke guru</button>`:'<p class="m">Dokumen terkunci. Jika perlu diubah, minta guru mengembalikannya.</p>'}<button class="btn g" onclick="go('dok')">Muat ulang</button></div>`
++L.map(x=>secEd(x,ENT.bag,!ok)).join('')+(ok?`<button class="btn" onclick="saveBags()">Simpan perubahan</button>`:'')}
 V.nilai=async()=>{ENT=await api('ent');const t=TIM.filter(x=>x.id!=ME.id),n=new Set(ENT.nilai.filter(x=>x.jenis=='peer').map(x=>x.untuk)).size;
 return head('Penilaian diri & teman','Skala: 1 Perlu bimbingan · 2 Cukup · 3 Baik · 4 Sangat baik. Penilaian teman hanya dilihat guru.')+`<div class="card"><div class="tabs"><button class="tab${NM=='diri'?' on':''}" onclick="NM='diri';go('nilai')">Diri sendiri</button><button class="tab${NM=='peer'?' on':''}" onclick="NM='peer';go('nilai')">Teman sebaya (${n}/${t.length})</button></div>
 ${NM=='peer'?`<label>Teman</label><select id="nu">${t.map(x=>`<option value="${esc(x.id)}">${esc(x.nama)}</option>`).join('')}</select>`:''}<label>Putaran</label><select id="np"><option value="awal">Awal</option><option value="akhir">Akhir</option></select>${sc('n')}<br><button class="btn" onclick="sNil()">Simpan</button></div>`};
 async function sNil(){const v=rd('n');if(!v)return toast('Lengkapi semua aspek',1);await send('saveNilai',{jenis:NM,untuk:NM=='peer'?$('#nu').value:'',putaran:$('#np').value,v},()=>go('nilai'))}
+/* ===== GURU: TINJAU DOKUMEN ===== */
+async function dokG(){if(!GK&&GR.length)GK=GR[0].kelompok;
+if(!GK)return head('Proposal & laporan','')+'<div class="card">Belum ada kelompok yang Anda bimbing.</div>';
+const D=await api('dokView',{kelompok:GK}),s=D.st.find(x=>x.dok==DK),L=SEC.filter(x=>x.d==DK);
+return head('Tinjau proposal & laporan','Beri catatan perbaikan atau setujui setelah kelompok mengirim dokumennya.')
++`<div class="card fl"><div><label>Kelompok</label><select onchange="GK=this.value;go('dok')">${GR.map(g=>`<option value="${esc(g.kelompok)}"${g.kelompok==GK?' selected':''}>${esc(g.kelompok)} · ${esc(g.nama)} (${esc(g.bus)})</option>`).join('')}</select></div></div>
+<div class="tabs">${['p','l'].map(k=>`<button class="tab${k==DK?' on':''}" onclick="DK='${k}';go('dok')">${k=='p'?'Bagian I: Proposal':'Bagian II: Laporan'}</button>`).join('')}</div>
+<div class="card"><div class="sp"><h3>Status ${DN[DK].toLowerCase()}</h3>${dchip(s)}</div>
+${s&&s.status=='dikirim'?`<label>Catatan untuk kelompok</label><textarea id="tc" rows="3" placeholder="Wajib diisi jika dikembalikan">${esc((s.catatan||'').trim())}</textarea><button class="btn r" onclick="tinjau('kembalikan')">Kembalikan untuk diperbaiki</button><button class="btn" onclick="tinjau('setujui')">Setujui</button>`:`<p class="m">${s&&s.status=='disetujui'?'Dokumen sudah disetujui.':s&&s.status=='dikembalikan'?'Menunggu perbaikan dari kelompok.':'Tinjauan tersedia setelah kelompok mengirim dokumen.'}</p>${s&&s.catatan&&s.catatan.trim()?`<div class="gd"><b>Catatan terakhir:</b> ${esc(s.catatan.trim())}</div>`:''}`}</div>`
++L.map(x=>{const r=D.bag.find(b=>b.bagian==x.id),v=r?r.isi.trim():'';return`<div class="card"><div class="sp"><h3>${esc(x.b)} · ${esc(x.j)}</h3>${v?'':chip('Belum diisi','#94a3b8')}</div><p style="white-space:pre-wrap;margin:4px 0">${v?esc(v):'<span class="m">(belum diisi)</span>'}</p>${r?`<p class="m" style="margin:0">${esc(r.oleh)} · ${new Date(r.waktu).toLocaleString('id-ID')}</p>`:''}</div>`}).join('')}
+async function tinjau(a){const c=$('#tc').value.trim();if(a=='kembalikan'&&!c)return toast('Tulis catatan perbaikan terlebih dahulu',1);if(a=='setujui'&&!confirm('Setujui dokumen ini?'))return;await send('tinjau',{kelompok:GK,dok:DK,aksi:a,catatan:c},()=>go('dok'))}
+V.dok=()=>ME.role=='siswa'?dokS():dokG();
 /* ===== FILTER GURU ===== */
 const ALL=()=>GR.flatMap(g=>g.anggota.map(s=>({...s,kelompok:g.kelompok,bus:g.bus})));
 const uq=a=>[...new Set(a)].filter(Boolean).sort();
@@ -94,27 +127,28 @@ const fa=()=>ALL().filter(s=>(!F.bus||s.bus==F.bus)&&(!F.kelas||s.kelas==F.kelas
 const sel=(l,v,a,k,cb)=>`<div><label>${l}</label><select onchange="F.${k}=this.value;${cb}()"><option value="">Semua</option>${opt(a,v)}</select></div>`;
 const fl=cb=>`<div class="card fl">${uq(GR.map(g=>g.bus)).length>1?sel('Bus',F.bus,uq(GR.map(g=>g.bus)),'bus',cb):''}${sel('Kelas',F.kelas,uq(ALL().map(s=>s.kelas)),'kelas',cb)}${sel('Kelompok',F.kel,uq(GR.map(g=>g.kelompok)),'kel',cb)}</div>`;
 /* ===== PANTAU ===== */
-V.pantau=async()=>{PD=await api('pantau',{tahap:PT});
-return head('Pantau pengisian','Status jurnal individu, tugas kelompok, dan penilaian siswa per tahap.')+`<div class="card"><label>Tahap</label><select onchange="PT=+this.value;go('pantau')" style="margin-bottom:0">${TH.map((x,i)=>`<option value="${i}"${i==PT?' selected':''}>${i+1}. ${esc(x.n)}</option>`).join('')}</select></div>`+fl('tbP')+`<div class="stat" id="sm"></div><div class="card w" id="tb"></div>`+(setTimeout(tbP),'')};
-function tbP(){const S=fa(),j=s=>PD.ent.find(x=>x.tipe=='jurnal'&&x.siswa==s.id),g=s=>PD.ent.find(x=>x.tipe=='tugas'&&x.kelompok==s.kelompok);PR=[];
-const bt=(r,i)=>r?` <a href="#" onclick="lihat(${i});return false">lihat</a>`:'';
-const rw=S.map(s=>{const a=j(s),b=g(s),n=new Set(PD.nil.filter(x=>x.jenis=='peer'&&x.dari==s.id).map(x=>x.untuk)).size,tot=ALL().filter(x=>x.kelompok==s.kelompok).length-1,d=PD.nil.some(x=>x.jenis=='diri'&&x.dari==s.id);
-const i=PR.push(a)-1,i2=PR.push(b)-1;return`<tr><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${esc(s.kelompok)}</td><td>${st(a)}${bt(a,i)}</td><td>${st(b)}${bt(b,i2)}</td><td>${d?'✓':'–'}</td><td>${n}/${tot}</td></tr>`}).join('');
-$('#sm').innerHTML=`<div><b>${S.length}</b>Siswa</div><div><b>${S.filter(s=>(j(s)||{}).status=='dikirim').length}</b>Jurnal terkirim</div><div><b>${S.filter(s=>!j(s)).length}</b>Jurnal belum diisi</div><div><b>${uq(S.filter(s=>(g(s)||{}).status=='dikirim').map(s=>s.kelompok)).length}/${uq(S.map(s=>s.kelompok)).length}</b>Tugas kelompok terkirim</div>`;
-$('#tb').innerHTML=`<table><tr><th>Nama</th><th>Kelas</th><th>Klp</th><th>Jurnal</th><th>Tugas kelompok</th><th>Diri</th><th>Teman</th></tr>${rw}</table>`}
-function lihat(i){const r=PR[i];$('#dc').innerHTML=`<h3>${r.tipe=='tugas'?'Tugas kelompok '+esc(r.kelompok):'Jurnal'}</h3><p class="m">${esc(r.oleh)} · ${new Date(r.waktu).toLocaleString('id-ID')}</p><p style="white-space:pre-wrap">${esc(r.isi.trim())}</p>`;dlg.showModal()}
+V.pantau=async()=>{PD=await api('pantau',{tahap:TH[PT].id});
+return head('Pantau pengisian','Status jurnal, penilaian siswa, serta proposal dan laporan kelompok.')+`<div class="card"><label>Tahap</label><select onchange="PT=+this.value;go('pantau')" style="margin-bottom:0">${TH.map((x,i)=>`<option value="${i}"${i==PT?' selected':''}>${i+1}. ${esc(x.n)}</option>`).join('')}</select></div>`+fl('tbP')+`<div class="stat" id="sm"></div><div class="card w" id="dk"></div><div class="card w" id="tb"></div>`+(setTimeout(tbP),'')};
+function tbP(){const S=fa(),j=s=>PD.ent.find(x=>x.siswa==s.id);PR=[];
+const rw=S.map(s=>{const a=j(s),n=new Set(PD.nil.filter(x=>x.jenis=='peer'&&x.dari==s.id).map(x=>x.untuk)).size,tot=ALL().filter(x=>x.kelompok==s.kelompok).length-1,d=PD.nil.some(x=>x.jenis=='diri'&&x.dari==s.id),i=PR.push(a)-1;
+return`<tr><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${esc(s.kelompok)}</td><td>${st(a)}${a?` <a href="#" onclick="lihat(${i});return false">lihat</a>`:''}</td><td>${d?'✓':'–'}</td><td>${n}/${tot}</td></tr>`}).join('');
+const ks=uq(S.map(s=>s.kelompok)),ds=(k,d)=>PD.st.find(x=>x.kelompok==k&&x.dok==d),nb=(k,d)=>PD.bag.filter(x=>x.kelompok==k&&SEC.find(s=>s.id==x.bagian).d==d).length,tt=d=>SEC.filter(s=>s.d==d).length;
+$('#sm').innerHTML=`<div><b>${S.length}</b>Siswa</div><div><b>${S.filter(s=>(j(s)||{}).status=='dikirim').length}</b>Jurnal terkirim</div><div><b>${S.filter(s=>!j(s)).length}</b>Jurnal belum diisi</div><div><b>${ks.filter(k=>ds(k,'p')&&['dikirim','disetujui'].includes(ds(k,'p').status)).length}/${ks.length}</b>Proposal terkirim</div>`;
+$('#dk').innerHTML=`<h3>Proposal dan laporan kelompok</h3><table><tr><th>Kelompok</th><th>Proposal</th><th>Laporan</th></tr>${ks.map(k=>`<tr><td>${esc(k)}</td>${['p','l'].map(d=>`<td>${dchip(ds(k,d))} <span class="m">terisi ${nb(k,d)}/${tt(d)}</span></td>`).join('')}</tr>`).join('')}</table>`;
+$('#tb').innerHTML=`<table><tr><th>Nama</th><th>Kelas</th><th>Klp</th><th>Jurnal tahap ini</th><th>Diri</th><th>Teman</th></tr>${rw}</table>`}
+function lihat(i){const r=PR[i];$('#dc').innerHTML=`<h3>Jurnal</h3><p class="m">${esc(r.oleh)} · ${new Date(r.waktu).toLocaleString('id-ID')}</p><p style="white-space:pre-wrap">${esc(r.isi.trim())}</p>`;dlg.showModal()}
 /* ===== OBSERVASI ===== */
 V.obs=async()=>{if(!OK&&GR.length)OK=GR[0].kelompok;const g=GR.find(x=>x.kelompok==OK);
 return head('Lembar observasi','Centang indikator yang terlihat. Indikator kelompok otomatis berlaku untuk seluruh anggota kelompok.')+(g?`<div class="card fl"><div><label>Kelompok</label><select onchange="OK=this.value;go('obs')">${GR.map(x=>`<option value="${esc(x.kelompok)}"${x.kelompok==OK?' selected':''}>${esc(x.kelompok)} · ${esc(x.nama)} (${esc(x.bus)})</option>`).join('')}</select></div>
 <div><label>Tahap</label><select onchange="OT=+this.value;go('obs')">${TH.map((x,i)=>`<option value="${i}"${i==OT?' selected':''}>${i+1}. ${esc(x.n)}</option>`).join('')}</select></div>
 <div><label>Kelas</label><select onchange="F.kelas=this.value;go('obs')"><option value="">Semua</option>${opt(uq(g.anggota.map(s=>s.kelas)),F.kelas)}</select></div></div>`+await obsTbl(g):'<div class="card">Belum ada kelompok yang Anda bimbing.</div>')};
-async function obsTbl(g){const D=await api('obsGet',{kelompok:OK,tahap:OT}),X=TH[OT],S=g.anggota.filter(s=>!F.kelas||s.kelas==F.kelas);
+async function obsTbl(g){const D=await api('obsGet',{kelompok:OK,tahap:TH[OT].id}),X=TH[OT],S=g.anggota.filter(s=>!F.kelas||s.kelas==F.kelas);
 const v=(i,s)=>{const r=D.find(x=>x.kode==i.k&&(i.l=='K'?!x.siswa:x.siswa==s));return r&&r.nilai?'checked':''};
 return`<div class="card w"><table><tr><th>Nama</th><th>Kelas</th>${X.i.map(i=>`<th title="${esc(i.x)}">${i.k}<br><span class="m">${i.l=='K'?'Kelompok':'Individu'}</span></th>`).join('')}</tr>
 ${S.map(s=>`<tr><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td>${X.i.map(i=>`<td><input type="checkbox" data-k="${i.k}" data-s="${esc(s.id)}" ${v(i,s.id)} ${i.l=='K'?'onchange="grpk(this)"':''}></td>`).join('')}</tr>`).join('')}</table></div>
 <div class="card"><h3>Keterangan indikator</h3>${X.i.map(i=>`<div class="row"><span>${kc(i.k)} <b>${i.k}</b> ${esc(i.x)}</span><span class="m">${i.l=='K'?'Kelompok':'Individu'}</span></div>`).join('')}<br><button class="btn" onclick="svObs()">Simpan observasi</button></div>`}
 function grpk(e){document.querySelectorAll(`input[data-k=${e.dataset.k}]`).forEach(c=>c.checked=e.checked)}
-async function svObs(){const items=[],X=TH[OT];X.i.forEach(i=>{const c=[...document.querySelectorAll(`input[data-k=${i.k}]`)];if(!c.length)return;if(i.l=='K')items.push({kode:i.k,siswa:'',nilai:c[0].checked});else c.forEach(e=>items.push({kode:i.k,siswa:e.dataset.s,nilai:e.checked}))});await send('saveObs',{kelompok:OK,tahap:OT,items})}
+async function svObs(){const items=[],X=TH[OT];X.i.forEach(i=>{const c=[...document.querySelectorAll(`input[data-k=${i.k}]`)];if(!c.length)return;if(i.l=='K')items.push({kode:i.k,siswa:'',nilai:c[0].checked});else c.forEach(e=>items.push({kode:i.k,siswa:e.dataset.s,nilai:e.checked}))});await send('saveObs',{kelompok:OK,tahap:X.id,items})}
 /* ===== REKAP ===== */
 const RF=()=>{const ids=new Set(fa().map(s=>s.id));return REK.filter(r=>ids.has(r.id))};
 V.rekap=async()=>{REK=await api('rekap');return head('Rekap & predikat','Nilai gabungan observasi, penilaian diri, dan teman sebaya (bobot diatur admin).')+fl('tbR')+`<div class="card"><button class="btn" onclick="xl()">Unduh Excel</button><button class="btn g" onclick="wd()">Unduh Word</button></div><div class="card w" id="tb"></div><div id="dt"></div>`+(setTimeout(tbR),'')};
@@ -123,7 +157,7 @@ function dt(id){const r=REK.find(x=>x.id==id);$('#dt').innerHTML=`<div class="ca
 function xl(){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(RF().map(r=>({ID:r.id,Nama:r.nama,Kelas:r.kelas,Kelompok:r.kelompok,Bus:r.bus,...Object.fromEntries(AN.map((n,i)=>[KD[i]+' '+n,fmt(r.asp[i])])),'Gotong Royong':fmt(r.gr),'Predikat GR':r.pg,'Bernalar Kritis':fmt(r.bk),'Predikat BK':r.pb,Deskripsi:r.deskripsi}))),'Rekap');XLSX.writeFile(wb,'Rekap_Karakter.xlsx')}
 function wd(){const h='<html><head><meta charset="utf-8"></head><body><h2>Rapor Karakter Plant Visit - SMK SMTI Padang</h2>'+RF().map(r=>`<h3>${esc(r.nama)} (${esc(r.id)}) - ${esc(r.kelas)} - Kelompok ${esc(r.kelompok)}</h3><table border="1" cellpadding="4" style="border-collapse:collapse"><tr><th>Karakter</th><th>Nilai</th><th>Predikat</th></tr><tr><td>Gotong Royong</td><td>${fmt(r.gr)}</td><td>${r.pg}</td></tr><tr><td>Bernalar Kritis</td><td>${fmt(r.bk)}</td><td>${r.pb}</td></tr></table><p>${esc(r.deskripsi)}</p><br style="page-break-after:always">`).join('')+'</body></html>';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff',h],{type:'application/msword'}));a.download='Rapor_Karakter.doc';a.click()}
 /* ===== INDIKATOR ===== */
-V.rubrik=()=>head('Indikator & rubrik','Indikator kelompok (K) otomatis berlaku untuk seluruh anggota; indikator individu (I) dicentang per siswa.')
+V.rubrik=()=>head('Indikator & rubrik','Team building (10 Des) tidak dinilai. Indikator kelompok (K) otomatis berlaku untuk seluruh anggota; indikator individu (I) dicentang per siswa.')
 +TH.map((x,i)=>`<div class="card w"><h3>Tahap ${i+1}: ${esc(x.n)}</h3><table>${x.i.map(n=>`<tr><td style="width:150px">${kc(n.k)}</td><td><b>${n.k}</b> ${esc(n.x)}</td><td class="m">${n.l=='K'?'Kelompok':'Individu'}</td></tr>`).join('')}</table></div>`).join('')
 +`<div class="card w"><h3>Predikat (skor gabungan)</h3><table><tr><th>Predikat</th><th>Batas</th><th>Gotong Royong</th><th>Bernalar Kritis</th></tr>
 <tr><td>${pc('Sangat Baik')}</td><td>≥ ${CFG.ambang[0]}%</td><td>Konsisten berkolaborasi, peduli, dan berbagi, termasuk tanpa diminta</td><td>Konsisten bertanya, beralasan dengan bukti, dan menyimpulkan logis</td></tr>
