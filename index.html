@@ -63,6 +63,12 @@ const IC={tugas:'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 
 const LB={tugas:'Tugas & jurnal',dok:'Proposal & laporan',nilai:'Kuesioner penilaian',saya:'Nilai saya',pantau:'Pantau pengisian',obs:'Observasi',rekap:'Rekap & predikat',impor:'Impor data & akun',setting:'Pengaturan',rubrik:'Indikator & rubrik',akun:'Ubah password'};
 const NAV={siswa:['tugas','dok','nilai','saya','rubrik','akun'],guru:['pantau','obs','dok','rekap','rubrik','akun'],admin:['pantau','obs','dok','rekap','impor','setting','rubrik','akun']};
 const V={};
+/* cache: data yang baru dibuka (<20 dtk) dipakai langsung; yang agak lama (<2 mnt) dipakai sambil disegarkan di latar; selebihnya diambil ulang */
+const CA={},INF={};let GEN=0;
+function cclr(){GEN++;for(const k in CA)delete CA[k];for(const k in INF)delete INF[k]}
+function fetchC(key,a,p){if(INF[key])return INF[key];const g=GEN,pr=api(a,p).then(d=>{if(g==GEN)CA[key]={t:Date.now(),d};return d}).finally(()=>{if(INF[key]==pr)delete INF[key]});INF[key]=pr;return pr}
+async function cget(key,a,p,force){const c=CA[key],age=c?Date.now()-c.t:1e9;if(!force&&c&&age<20000)return c.d;if(!force&&c&&age<120000){fetchC(key,a,p).catch(()=>{});return c.d}return fetchC(key,a,p)}
+function prefetch(){const q=(k,a,p)=>cget(k,a,p).catch(()=>{});if(ME.role=='siswa'){q('ent','ent');q('rs','rekapSaya')}else{q('rekap','rekap');if(GR[0])q('dv|'+GR[0].kelompok,'dokView',{kelompok:GR[0].kelompok})}}
 async function call(b){if(API_URL.startsWith('GANTI'))throw new Error('API_URL di index.html belum diisi dengan URL /exec');
 let r;try{r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)})}catch(e){throw new Error('Tidak dapat terhubung ke server. Periksa koneksi internet dan URL /exec')}
 let d;try{d=JSON.parse(await r.text())}catch(e){throw new Error('Respons server bukan JSON. Pastikan deployment memakai versi terbaru dan akses Siapa saja')}
@@ -70,17 +76,19 @@ if(d.error)throw new Error(d.error);return d.data}
 const api=(a,p)=>call({fn:'api',t:T,a,p:p||{}}).catch(e=>{if(/SESI/.test(e.message))out();throw e});
 function toast(m,e){const t=$('#toast');t.textContent=m;t.style.background=e?'#b91c1c':'#14232b';t.style.display='block';setTimeout(()=>t.style.display='none',3200)}
 function showLogin(){$('#bt').hidden=true;$('#app').hidden=true;$('#lg').style.display='block'}
-function out(){T=null;localStorage.removeItem(TK);history.replaceState(null,'','#');showLogin()}
-async function send(a,p,after){try{await api(a,p);toast('Tersimpan');after&&after()}catch(e){toast(e.message,1)}}
+function out(){T=null;cclr();localStorage.removeItem(TK);history.replaceState(null,'','#');showLogin()}
+async function send(a,p,after){try{await api(a,p);cclr();toast('Tersimpan');after&&after()}catch(e){toast(e.message,1)}}
 /* ===== MASUK & SESI (tetap login setelah reload) ===== */
-async function start(){const d=await api('me');ME=d.u;CFG=d.cfg;TH=d.th;SEC=d.sec;TIM=d.tim;KU=d.ku;KEL=d.kel;if(ME.role!='siswa')GR=await api('grup');
+async function start(){const d=await api('me');ME=d.u;CFG=d.cfg;TH=d.th;SEC=d.sec;TIM=d.tim;KU=d.ku;KEL=d.kel;GR=d.gr||[];
 $('#bt').hidden=true;$('#lg').style.display='none';$('#app').hidden=false;$('#wn').textContent=ME.nama;$('#wr').textContent=ME.role=='siswa'?'Siswa · Kelompok '+ME.kelompok:ME.role=='guru'?'Guru pembimbing':'Administrator';
 $('#nv').innerHTML=NAV[ME.role].map(k=>`<button id="n_${k}" onclick="go('${k}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[k]}"/></svg>${LB[k]}</button>`).join('');
-const h=location.hash.slice(1);go(NAV[ME.role].includes(h)?h:NAV[ME.role][0])}
+const h=location.hash.slice(1);go(NAV[ME.role].includes(h)?h:NAV[ME.role][0]);setTimeout(prefetch,900)}
 async function doLogin(){try{const r=await call({fn:'login',id:$('#u').value,pin:$('#p').value});if(!r)return toast('ID atau password salah',1);T=r.token;localStorage.setItem(TK,T);$('#p').value='';await start()}catch(e){toast(e.message,1)}}
 (async()=>{T=localStorage.getItem(TK);if(!T)return showLogin();try{await start()}catch(e){if(!/SESI/.test(e.message))toast(e.message,1);showLogin()}})();
-async function go(k){CUR=k;history.replaceState(null,'','#'+k);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.id=='n_'+k));try{$('#mn').innerHTML=await V[k]()}catch(e){toast(e.message,1)}}
-const head=(t,s)=>`<div class="ph"><h2>${t}</h2><p>${s||''}</p></div>`;
+let GOID=0;
+async function go(k){const id=++GOID;CUR=k;history.replaceState(null,'','#'+k);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.id=='n_'+k));const tm=setTimeout(()=>{if(id==GOID)$('#mn').innerHTML='<div class="card m">Memuat…</div>'},150);try{const h=await V[k]();if(id==GOID)$('#mn').innerHTML=h}catch(e){if(id==GOID)toast(e.message,1)}finally{clearTimeout(tm)}}
+const RV=['tugas','dok','nilai','saya','pantau','obs','rekap'];
+const head=(t,s)=>`<div class="ph sp" style="align-items:flex-start"><div><h2>${t}</h2><p>${s||''}</p></div>${RV.includes(CUR)?'<button class="btn g" style="white-space:nowrap" onclick="cclr();go(CUR)">↻ Muat ulang</button>':''}</div>`;
 const chip=(t,c)=>`<span class="chip" style="background:${c}1f;color:${c}">${esc(t)}</span>`;
 const st=r=>r?(r.status=='dikirim'?chip('Terkirim','#16a34a'):chip('Draf','#d97706')):chip('Belum diisi','#94a3b8');
 const dchip=s=>{const d=DS[(s&&s.status)||'draft'];return chip(d[0],d[1])};
@@ -94,30 +102,31 @@ function radar(v,s=270){const c=s/2,r=s/2-48,pt=(i,f)=>{const a=-Math.PI/2+i*Mat
 return`<svg viewBox="0 0 ${s} ${s}" width="100%" style="max-width:${s}px">${[.25,.5,.75,1].map(f=>`<polygon points="${pl(f)}" fill="none" stroke="#e2e8f0"/>`).join('')}<polygon points="${v.map((x,i)=>pt(i,(x||0)/100).join(',')).join(' ')}" fill="#0b5f5a40" stroke="#0b5f5a" stroke-width="2"/>${AN.map((n,i)=>{const[x,y]=pt(i,1.22);return`<text x="${x}" y="${y}" font-size="10" text-anchor="middle" fill="#64748b">${n.split(' ')[0]}</text>`}).join('')}</svg>`}
 const det=(t,gr,bk,asp,des)=>`<div class="card g2"><div style="text-align:center">${radar(asp)}</div><div><h3>${esc(t)}</h3><p>Gotong Royong <b>${fmt(gr)}</b> ${pc(pr(gr))}<br>Bernalar Kritis <b>${fmt(bk)}</b> ${pc(pr(bk))}</p><p>${esc(des)}</p>${AN.map((n,i)=>`<div class="row"><span>${kc(KD[i])} ${n}</span><b>${fmt(asp[i])}</b></div>`).join('')}</div></div>`;
 /* ===== FORMAT BAGIAN DOKUMEN (teks, isian berlabel, tabel) ===== */
-const pf=f=>{const t=f.split('|'),ty=t[0];if(ty=='tx')return{ty};if(ty=='kv')return{ty,l:t.slice(1)};const c=t.slice(1);let n=0,r=null;const L=c[c.length-1];if(L[0]=='#'){n=+L.slice(1);c.pop()}else if(L[0]=='@'){r=L.slice(1).split(';').map(x=>x.split('~'));c.pop();n=r.length}return{ty,c,n,r}};
-const blankRow=(p,i)=>p.c.map((c,j)=>p.r?(p.r[i]&&p.r[i][j])||'':c=='No'?String(i+1):'');
+const pf=f=>{const t=f.split('|'),ty=t[0];if(ty=='tx')return{ty};if(ty=='kv')return{ty,l:t.slice(1)};const c=t.slice(1);let n=0,r=null;const L=c[c.length-1],k=L[0];if('#@*+'.includes(k)){c.pop();if(k=='#')n=+L.slice(1);else{r=L.slice(1).split(';').map(x=>x.split('~'));n=r.length}}return{ty,c,n,r,lk:k=='@',ex:k=='#'||k=='+'}};
+const autoLb=(p,i)=>{const m=String(p.r[0][0]).match(/^(.*?)(\d+)\s*$/);return m?m[1]+(i+1):''};
+const blankRow=(p,i)=>p.c.map((c,j)=>p.r&&i<p.r.length?(p.r[i][j]||''):c=='No'&&!p.r?String(i+1):(j==0&&p.r?autoLb(p,i):''));
 function dflt(p){return p.ty=='tx'?'':p.ty=='kv'?p.l.map(()=>''):Array.from({length:p.n},(_,i)=>blankRow(p,i))}
 function parseVal(raw,p){if(p.ty=='tx')return String(raw||'').trim();let v;try{v=JSON.parse(raw)}catch(e){return dflt(p)}if(!Array.isArray(v))return dflt(p);
 if(p.ty=='kv')return p.l.map((_,i)=>String(v[i]==null?'':v[i]));
 let rs=v.map(r=>p.c.map((_,j)=>String(Array.isArray(r)&&r[j]!=null?r[j]:'')));while(rs.length<p.n)rs.push(blankRow(p,rs.length));
-if(p.r)rs=rs.slice(0,p.r.length).map((r,i)=>{r[0]=p.r[i][0];return r});else rs=rs.map((r,i)=>r.map((x,j)=>p.c[j]=='No'?String(i+1):x));return rs}
+if(p.lk)rs=rs.slice(0,p.n).map((r,i)=>{r[0]=p.r[i][0];return r});else{if(!p.ex)rs=rs.slice(0,p.n);if(!p.r)rs=rs.map((r,i)=>r.map((x,j)=>p.c[j]=='No'?String(i+1):x))}return rs}
 const ser=(p,v)=>p.ty=='tx'?v.trim():JSON.stringify(p.ty=='kv'?v.map(x=>x.trim()):v.map(r=>r.map(x=>x.trim())));
-const rowHtml=(p,r,i,dis)=>`<tr class="rw">${p.c.map((c,j)=>p.r&&j==0?`<td class="lab" data-c="${j}" data-v="${esc(r[j])}"><b>${esc(r[j])}</b></td>`:c=='No'&&!p.r?`<td class="no" data-c="${j}">${i+1}</td>`:`<td data-c="${j}"><textarea class="cc" rows="2" ${dis?'disabled':''}>${esc(r[j])}</textarea></td>`).join('')}${!p.r&&!dis?`<td style="width:34px;min-width:0"><button class="x" title="Hapus baris" onclick="delRow(this)">×</button></td>`:''}</tr>`;
+const rowHtml=(p,r,i,dis)=>`<tr class="rw">${p.c.map((c,j)=>p.lk&&j==0?`<td class="lab" data-c="${j}" data-v="${esc(r[j])}"><b>${esc(r[j])}</b></td>`:c=='No'&&!p.r?`<td class="no" data-c="${j}">${i+1}</td>`:`<td data-c="${j}"><textarea class="cc" rows="2" ${dis?'disabled':''}>${esc(r[j])}</textarea></td>`).join('')}${p.ex&&!dis?`<td style="width:34px;min-width:0"><button class="x" title="Hapus baris" onclick="delRow(this)">×</button></td>`:''}</tr>`;
 const secEd=(s,B,lk)=>{const p=pf(s.f),r=B.find(x=>x.bagian==s.id),v=parseVal(r?r.isi:'',p),d=lk?'disabled':'';let body;
 if(p.ty=='tx')body=`<textarea class="cc" rows="5" ${d}>${esc(v)}</textarea>`;
 else if(p.ty=='kv')body=`<div class="w"><table class="ft">${p.l.map((l,i)=>`<tr><th>${esc(l)}</th><td><textarea class="cc" rows="2" ${d}>${esc(v[i])}</textarea></td></tr>`).join('')}</table></div>`;
-else body=`<div class="w"><table class="ft"><thead><tr>${p.c.map(c=>`<th>${esc(c)}</th>`).join('')}${!p.r&&!lk?'<th></th>':''}</tr></thead><tbody>${v.map((x,i)=>rowHtml(p,x,i,lk)).join('')}</tbody></table></div>${!p.r&&!lk?`<button class="btn g" style="margin-top:8px" onclick="addRow('${s.id}')">+ Tambah baris</button>`:''}`;
+else body=`<div class="w"><table class="ft"><thead><tr>${p.c.map(c=>`<th>${esc(c)}</th>`).join('')}${p.ex&&!lk?'<th></th>':''}</tr></thead><tbody>${v.map((x,i)=>rowHtml(p,x,i,lk)).join('')}</tbody></table></div>${p.ex&&!lk?`<button class="btn g" style="margin-top:8px" onclick="addRow('${s.id}')">+ Tambah baris</button>`:''}`;
 return`<div class="card sc" data-b="${s.id}" data-f="${esc(s.f)}" data-o="${esc(ser(p,v))}" data-lk="${lk?1:0}"><div class="sp"><h3>${esc(s.b)} · ${esc(s.j)}</h3>${chip(DN[s.d],s.d=='p'?'#0f766e':'#7c3aed')}</div><div class="gd"><b>Petunjuk:</b> ${esc(s.g)}</div>${body}${r?`<p class="m" style="margin:6px 0 0">Terakhir diubah: ${esc(r.oleh)} · ${new Date(r.waktu).toLocaleString('id-ID')}</p>`:''}</div>`};
 function collect(sc,p){if(p.ty=='tx')return sc.querySelector('.cc').value;if(p.ty=='kv')return[...sc.querySelectorAll('.cc')].map(x=>x.value);
 return[...sc.querySelectorAll('tr.rw')].map((tr,i)=>[...tr.querySelectorAll('td[data-c]')].map((td,j)=>{const x=td.querySelector('.cc');return x?x.value:(p.c[j]=='No'&&!p.r?String(i+1):td.dataset.v||'')}))}
 const scs=()=>[...document.querySelectorAll('.sc[data-lk="0"]')];
 const chg=()=>scs().map(sc=>{const p=pf(sc.dataset.f);return{b:sc.dataset.b,o:sc.dataset.o,s:ser(p,collect(sc,p))}}).filter(x=>x.s!==x.o).map(x=>({bagian:x.b,isi:x.s}));
-function emp(sc){const p=pf(sc.dataset.f),v=collect(sc,p),bl=x=>!x.trim();if(p.ty=='tx')return bl(v);if(p.ty=='kv')return v.every(bl);return v.every((r,i)=>r.every((x,j)=>(p.r&&j==0)||p.c[j]=='No'||bl(x)||(p.r&&p.r[i]&&p.r[i][j]==x)))}
+function emp(sc){const p=pf(sc.dataset.f),v=collect(sc,p),bl=x=>!x.trim();if(p.ty=='tx')return bl(v);if(p.ty=='kv')return v.every(bl);return v.every((r,i)=>r.every((x,j)=>(p.lk&&j==0)||p.c[j]=='No'||bl(x)||(p.r&&p.r[i]&&p.r[i][j]==x)))}
 function addRow(id){const sc=document.querySelector(`.sc[data-b="${id}"]`),p=pf(sc.dataset.f),tb=sc.querySelector('tbody'),i=tb.children.length;tb.insertAdjacentHTML('beforeend',rowHtml(p,blankRow(p,i),i,false))}
 function delRow(b){const tb=b.closest('tbody');b.closest('tr').remove();[...tb.querySelectorAll('td.no')].forEach((td,i)=>td.textContent=i+1)}
 async function saveBags(){const items=chg();if(!items.length)return toast('Tidak ada perubahan');await send('saveBag',{items},()=>go(CUR))}
 async function kirimDok(){try{const n=scs().filter(emp).length;if(!confirm((n?n+' bagian masih kosong. ':'')+'Setelah dikirim, '+DN[DK].toLowerCase()+' terkunci sampai guru mengembalikan. Kirim sekarang?'))return;
-const items=chg();if(items.length)await api('saveBag',{items});await api('kirimDok',{dok:DK});toast('Terkirim ke guru');go('dok')}catch(e){toast(e.message,1)}}
+const items=chg();if(items.length)await api('saveBag',{items});await api('kirimDok',{dok:DK});cclr();toast('Terkirim ke guru');go('dok')}catch(e){toast(e.message,1)}}
 /* ===== UNDUH PDF / WORD ===== */
 const nl=t=>esc(t).replace(/\n/g,'<br>');
 const tbl=(h,rs)=>`<table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;width:100%;font-size:10pt"><tr>${h.map(x=>`<th style="background:#e6f2f0;text-align:left">${esc(x)}</th>`).join('')}</tr>${rs.map(r=>`<tr>${r.map(c=>`<td valign="top">${nl(c)}</td>`).join('')}</tr>`).join('')}</table>`;
@@ -128,7 +137,7 @@ S.forEach(x=>{if(x.b!=last){h+=`<h2 style="color:#0b5f5a">${esc(x.b)}${BT[x.b]&&
 h+=p.ty=='tx'?`<p>${v.trim()?nl(v):'-'}</p>`:p.ty=='kv'?tbl(['Hal','Isi'],p.l.map((l,i)=>[l,v[i]])):tbl(p.c,v)});
 return h+'<p style="margin-top:24px;font-size:9pt;color:#666">&copy; DAM 2026 · Kokurikuler Plant Visit SMK SMTI Padang</p>'}
 const full=b=>`<html><head><meta charset="utf-8"><title>Dokumen</title><style>@page{size:A4;margin:2cm}body{font-family:Arial,sans-serif;font-size:11pt}h3{margin:14px 0 6px;font-size:12pt}h2{page-break-after:avoid}tr{page-break-inside:avoid}</style></head><body>${b}</body></html>`;
-async function dlDoc(kind){try{let bag,s,m;if(ME.role=='siswa'){const it=chg();if(it.length)await api('saveBag',{items:it});ENT=await api('ent');bag=ENT.bag;s=ENT.st.find(x=>x.dok==DK);m={nama:KEL?KEL.nama:'',kelompok:ME.kelompok,bus:KEL?KEL.bus:'',guru:KEL?KEL.guru:[],anggota:TIM}}
+async function dlDoc(kind){try{let bag,s,m;if(ME.role=='siswa'){const it=chg();if(it.length){await api('saveBag',{items:it});cclr()}ENT=await cget('ent','ent');bag=ENT.bag;s=ENT.st.find(x=>x.dok==DK);m={nama:KEL?KEL.nama:'',kelompok:ME.kelompok,bus:KEL?KEL.bus:'',guru:KEL?KEL.guru:[],anggota:TIM}}
 else{const g=GR.find(x=>x.kelompok==GK);DV=await api('dokView',{kelompok:GK});bag=DV.bag;s=DV.st.find(x=>x.dok==DK);m={nama:g.nama,kelompok:g.kelompok,bus:g.bus,guru:g.guru,anggota:g.anggota}}
 const html=full(docHtml(DK,bag,m,s)),fn=(DN[DK]+'_'+m.kelompok).replace(/\W+/g,'_');
 if(kind=='word'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff',html],{type:'application/msword'}));a.download=fn+'.doc';a.click()}
@@ -137,7 +146,7 @@ const dlb=`<button class="btn g" onclick="dlDoc('word')">Unduh Word</button><but
 /* ===== SISWA ===== */
 const ed=(ti,h,r)=>{const lk=r&&r.status=='dikirim';return`<div class="card"><div class="sp"><h3>${ti}</h3>${st(r)}</div><p class="m">${h}</p><textarea id="e_j" rows="6" ${lk?'disabled':''}>${esc(r?r.isi.trim():'')}</textarea>${r?`<p class="m">Terakhir diubah: ${new Date(r.waktu).toLocaleString('id-ID')}</p>`:''}${lk?'':`<button class="btn g" onclick="sv(0)">Simpan draf</button><button class="btn" onclick="sv(1)">Kirim</button>`}</div>`};
 async function sv(k){const i=$('#e_j').value.trim();if(!i)return toast('Isi terlebih dahulu',1);if(k&&!confirm('Setelah dikirim jurnal tidak dapat diubah. Kirim sekarang?'))return;await send('saveEnt',{tahap:TH[TS].id,isi:i,kirim:k},()=>go('tugas'))}
-V.tugas=async()=>{ENT=await api('ent');const X=TH[TS],j=ENT.jurnal.find(x=>x.tahap==X.id),L=SEC.filter(s=>s.t.includes(X.id)),lk=d=>!ed_(ENT.st.find(x=>x.dok==d));
+V.tugas=async()=>{ENT=await cget('ent','ent');const X=TH[TS],j=ENT.jurnal.find(x=>x.tahap==X.id),L=SEC.filter(s=>s.t.includes(X.id)),lk=d=>!ed_(ENT.st.find(x=>x.dok==d));
 const dot=i=>{const a=ENT.jurnal.find(x=>x.tahap==TH[i].id);return a?(a.status=='dikirim'?'#16a34a':'#d97706'):'#cbd5e1'};
 return head('Tugas & jurnal','Team building (10 Des) tidak dinilai. Penilaian karakter dimulai sejak perjalanan 13 Des sampai kepulangan.')
 +`<div class="tabs">${TH.map((x,i)=>`<button class="tab${i==TS?' on':''}" onclick="TS=${i};go('tugas')"><i style="background:${dot(i)}"></i>${esc(x.n.split(' (')[0])}</button>`).join('')}</div>
@@ -145,30 +154,30 @@ return head('Tugas & jurnal','Team building (10 Des) tidak dinilai. Penilaian ka
 +(L.length?L.map(s=>secEd(s,ENT.bag,lk(s.d))).join('')+(L.some(s=>!lk(s.d))?`<button class="btn" onclick="saveBags()">Simpan perubahan bagian</button><button class="btn g" onclick="go('dok')">Buka seluruh dokumen</button>`:'<p class="m">Dokumen terkunci. Buka menu Proposal & laporan untuk melihat statusnya.</p>'):'<div class="card m">Tahap ini tidak memiliki bagian proposal atau laporan khusus.</div>')
 +ed('Jurnal harian saya','Kontribusi saya, kendala, dan hal yang saya pelajari pada tahap ini.',j)
 +`<div class="card"><h3>Yang dinilai pada tahap ini</h3>${X.i.map(i=>`<div class="row"><span>${kc(i.k)} ${esc(i.x)}</span><span class="m">${i.l=='K'?'Kelompok':'Individu'}</span></div>`).join('')}</div>`};
-async function dokS(){ENT=await api('ent');const s=ENT.st.find(x=>x.dok==DK),ok=ed_(s),L=SEC.filter(x=>x.d==DK);
+async function dokS(){ENT=await cget('ent','ent');const s=ENT.st.find(x=>x.dok==DK),ok=ed_(s),L=SEC.filter(x=>x.d==DK);
 return head('Proposal & laporan kelompok','Disunting bersama anggota kelompok. Setelah dikirim, dokumen terkunci sampai dikembalikan guru.')
 +`<div class="tabs">${['p','l'].map(k=>`<button class="tab${k==DK?' on':''}" onclick="DK='${k}';go('dok')">${k=='p'?'Bagian I: Proposal':'Bagian II: Laporan'}</button>`).join('')}</div>
 <div class="card"><div class="sp"><h3>Status ${DN[DK].toLowerCase()}</h3>${dchip(s)}</div>${s&&s.catatan&&s.catatan.trim()?`<div class="gd"><b>Catatan guru:</b> ${esc(s.catatan.trim())}</div>`:''}
 ${ok?`<button class="btn" onclick="saveBags()">Simpan perubahan</button><button class="btn g" onclick="kirimDok()">Kirim ${DN[DK].toLowerCase()} ke guru</button>`:'<p class="m">Dokumen terkunci. Jika perlu diubah, minta guru mengembalikannya.</p>'}<button class="btn g" onclick="go('dok')">Muat ulang</button>${dlb}</div>`
 +L.map(x=>secEd(x,ENT.bag,!ok)).join('')+(ok?`<button class="btn" onclick="saveBags()">Simpan perubahan</button>`:'')}
 /* kuesioner diri & sebaya (skala 4 pilihan, dikonversi ke angka 1-4) */
-V.nilai=async()=>{ENT=await api('ent');const t=TIM.filter(x=>x.id!=ME.id),n=new Set(ENT.nilai.filter(x=>x.jenis=='peer').map(x=>x.untuk)).size,pre=NM=='diri'?'Saya ':'Teman ini ';
+V.nilai=async()=>{ENT=await cget('ent','ent');const t=TIM.filter(x=>x.id!=ME.id),n=new Set(ENT.nilai.filter(x=>x.jenis=='peer').map(x=>x.untuk)).size,pre=NM=='diri'?'Saya ':'Teman ini ';
 const grp=(g,from)=>`<h4>${g}</h4>`+KU.slice(from,from+10).map((q,i)=>{const k=from+i;return`<div class="qr"><span>${i+1}. ${pre}${esc(q)}.</span><span class="seg">${[1,2,3,4].map(v=>`<label title="${OPTL[v-1]}"><input type="radio" name="q${k}" value="${v}" onchange="liveSc()"><span>${OPT[v-1]}</span></label>`).join('')}</span></div>`}).join('');
 return head('Kuesioner penilaian diri & teman','Pilih tanggapan untuk setiap pernyataan. Jawaban dikonversi menjadi angka: Tidak setuju = 1, Kurang setuju = 2, Setuju = 3, Sangat setuju = 4. Penilaian teman hanya dilihat guru.')
 +`<div class="card"><div class="tabs"><button class="tab${NM=='diri'?' on':''}" onclick="NM='diri';go('nilai')">Diri sendiri</button><button class="tab${NM=='peer'?' on':''}" onclick="NM='peer';go('nilai')">Teman sebaya (${n}/${t.length})</button></div>
 ${NM=='peer'?`<label>Teman yang dinilai</label><select id="nu" onchange="pre_()">${t.map(x=>`<option value="${esc(x.id)}">${esc(x.nama)}</option>`).join('')}</select>`:''}<label>Putaran</label><select id="np" onchange="pre_()"><option value="awal">Awal</option><option value="akhir">Akhir</option></select>
 <p class="m">TS = Tidak setuju · KS = Kurang setuju · S = Setuju · SS = Sangat setuju</p>${grp('Gotong Royong',0)}${grp('Bernalar Kritis',10)}<div id="ls" class="gd"></div><button class="btn" onclick="sNil()">Simpan</button></div>`+(setTimeout(pre_),'')};
-function pre_(){const per=$('#np').value,u=NM=='peer'?($('#nu')?$('#nu').value:''):ME.id,r=ENT.nilai.find(x=>x.jenis==NM&&x.putaran==per&&(NM=='diri'||x.untuk==u));document.querySelectorAll('[name^=q]').forEach(e=>e.checked=!!(r&&r.jawab&&r.jawab[+e.name.slice(1)]==e.value));liveSc()}
+function pre_(){if(!$('#np'))return;const per=$('#np').value,u=NM=='peer'?($('#nu')?$('#nu').value:''):ME.id,r=ENT.nilai.find(x=>x.jenis==NM&&x.putaran==per&&(NM=='diri'||x.untuk==u));document.querySelectorAll('[name^=q]').forEach(e=>e.checked=!!(r&&r.jawab&&r.jawab[+e.name.slice(1)]==e.value));liveSc()}
 function liveSc(){const m=(a,b)=>{const v=[];for(let k=a;k<b;k++){const e=document.querySelector(`[name=q${k}]:checked`);if(e)v.push(+e.value)}return v.length?v.reduce((x,y)=>x+y,0)/v.length:null},f=x=>x==null?'-':x.toFixed(2)+' (setara '+Math.round(x*25)+'%)';$('#ls').innerHTML=`<b>Skor sementara (skala 1-4):</b> Gotong Royong ${f(m(0,10))} · Bernalar Kritis ${f(m(10,20))}`}
 async function sNil(){let j='';for(let k=0;k<20;k++){const e=document.querySelector(`[name=q${k}]:checked`);if(!e)return toast('Masih ada pernyataan yang belum dijawab',1);j+=e.value}await send('saveNilai',{jenis:NM,untuk:NM=='peer'?$('#nu').value:'',putaran:$('#np').value,jawab:j},()=>go('nilai'))}
-V.saya=async()=>{let r;try{r=await api('rekapSaya')}catch(e){return head('Nilai saya','')+`<div class="card">${esc(e.message)}</div>`}
+V.saya=async()=>{let r;try{r=await cget('rs','rekapSaya')}catch(e){return head('Nilai saya','')+`<div class="card">${esc(e.message)}</div>`}
 return head('Nilai saya','Ringkasan karakter Gotong Royong dan Bernalar Kritis dari observasi guru, penilaian diri, dan penilaian teman (bobot diatur admin).')+det(r.nama+' · '+r.kelas,r.gr,r.bk,r.asp,r.deskripsi)};
 V.akun=()=>head('Ubah password','Gunakan password yang mudah diingat tetapi sulit ditebak.')+`<div class="card" style="max-width:420px"><label>Password lama</label><input id="pl" type="password" autocomplete="current-password"><label>Password baru (minimal 6 karakter)</label><input id="pb" type="password" autocomplete="new-password"><label>Ulangi password baru</label><input id="pu" type="password" autocomplete="new-password"><button class="btn" onclick="sPw()">Simpan password</button></div>`;
 async function sPw(){if($('#pb').value!=$('#pu').value)return toast('Ulangan password tidak sama',1);try{const r=await api('ubahPin',{lama:$('#pl').value,baru:$('#pb').value});T=r.token;localStorage.setItem(TK,T);toast('Password berhasil diubah');go('akun')}catch(e){toast(e.message,1)}}
 /* ===== GURU: TINJAU DOKUMEN ===== */
 async function dokG(){if(!GK&&GR.length)GK=GR[0].kelompok;
 if(!GK)return head('Proposal & laporan','')+'<div class="card">Belum ada kelompok pada bus yang menjadi tanggung jawab Anda.</div>';
-DV=await api('dokView',{kelompok:GK});const s=DV.st.find(x=>x.dok==DK),L=SEC.filter(x=>x.d==DK);
+DV=await cget('dv|'+GK,'dokView',{kelompok:GK});const s=DV.st.find(x=>x.dok==DK),L=SEC.filter(x=>x.d==DK);
 return head('Tinjau proposal & laporan','Beri catatan perbaikan atau setujui setelah kelompok mengirim dokumennya.')
 +`<div class="card fl"><div><label>Kelompok</label><select onchange="GK=this.value;go('dok')">${GR.map(g=>`<option value="${esc(g.kelompok)}"${g.kelompok==GK?' selected':''}>${esc(g.kelompok)} · ${esc(g.nama)} (${esc(g.bus)})</option>`).join('')}</select></div></div>
 <div class="tabs">${['p','l'].map(k=>`<button class="tab${k==DK?' on':''}" onclick="DK='${k}';go('dok')">${k=='p'?'Bagian I: Proposal':'Bagian II: Laporan'}</button>`).join('')}</div>
@@ -184,9 +193,9 @@ const fa=()=>ALL().filter(s=>(!F.bus||s.bus==F.bus)&&(!F.kelas||s.kelas==F.kelas
 const sel=(l,v,a,k,cb)=>`<div><label>${l}</label><select onchange="F.${k}=this.value;${cb}()"><option value="">Semua</option>${opt(a,v)}</select></div>`;
 const fl=cb=>`<div class="card fl">${uq(GR.map(g=>g.bus)).length>1?sel('Bus',F.bus,uq(GR.map(g=>g.bus)),'bus',cb):''}${sel('Kelas',F.kelas,uq(ALL().map(s=>s.kelas)),'kelas',cb)}${sel('Kelompok',F.kel,uq(GR.map(g=>g.kelompok)),'kel',cb)}</div>`;
 /* ===== PANTAU ===== */
-V.pantau=async()=>{PD=await api('pantau',{tahap:TH[PT].id});
+V.pantau=async()=>{PD=await cget('pn|'+TH[PT].id,'pantau',{tahap:TH[PT].id});
 return head('Pantau pengisian','Status jurnal, penilaian siswa, serta proposal dan laporan kelompok pada bus Anda.')+`<div class="card"><label>Tahap</label><select onchange="PT=+this.value;go('pantau')" style="margin-bottom:0">${TH.map((x,i)=>`<option value="${i}"${i==PT?' selected':''}>${i+1}. ${esc(x.n)}</option>`).join('')}</select></div>`+fl('tbP')+`<div class="stat" id="sm"></div><div class="card w" id="dk"></div><div class="card w" id="tb"></div>`+(setTimeout(tbP),'')};
-function tbP(){const S=fa(),j=s=>PD.ent.find(x=>x.siswa==s.id);PR=[];
+function tbP(){if(!$('#sm'))return;const S=fa(),j=s=>PD.ent.find(x=>x.siswa==s.id);PR=[];
 const rw=S.map(s=>{const a=j(s),n=new Set(PD.nil.filter(x=>x.jenis=='peer'&&x.dari==s.id).map(x=>x.untuk)).size,tot=ALL().filter(x=>x.kelompok==s.kelompok).length-1,d=PD.nil.some(x=>x.jenis=='diri'&&x.dari==s.id),i=PR.push(a)-1;
 return`<tr><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${esc(s.kelompok)}</td><td>${st(a)}${a?` <a href="#" onclick="lihat(${i});return false">lihat</a>`:''}</td><td>${d?'✓':'–'}</td><td>${n}/${tot}</td></tr>`}).join('');
 const ks=uq(S.map(s=>s.kelompok)),ds=(k,d)=>PD.st.find(x=>x.kelompok==k&&x.dok==d),nb=(k,d)=>PD.bag.filter(x=>x.kelompok==k&&SEC.find(s=>s.id==x.bagian).d==d).length,tt=d=>SEC.filter(s=>s.d==d).length;
@@ -199,7 +208,7 @@ V.obs=async()=>{if(!OK&&GR.length)OK=GR[0].kelompok;const g=GR.find(x=>x.kelompo
 return head('Lembar observasi','Centang indikator yang terlihat. Indikator kelompok otomatis berlaku untuk seluruh anggota kelompok.')+(g?`<div class="card fl"><div><label>Kelompok</label><select onchange="OK=this.value;go('obs')">${GR.map(x=>`<option value="${esc(x.kelompok)}"${x.kelompok==OK?' selected':''}>${esc(x.kelompok)} · ${esc(x.nama)} (${esc(x.bus)})</option>`).join('')}</select></div>
 <div><label>Tahap</label><select onchange="OT=+this.value;go('obs')">${TH.map((x,i)=>`<option value="${i}"${i==OT?' selected':''}>${i+1}. ${esc(x.n)}</option>`).join('')}</select></div>
 <div><label>Kelas</label><select onchange="F.kelas=this.value;go('obs')"><option value="">Semua</option>${opt(uq(g.anggota.map(s=>s.kelas)),F.kelas)}</select></div></div>`+await obsTbl(g):'<div class="card">Belum ada kelompok pada bus yang menjadi tanggung jawab Anda.</div>')};
-async function obsTbl(g){const D=await api('obsGet',{kelompok:OK,tahap:TH[OT].id}),X=TH[OT],S=g.anggota.filter(s=>!F.kelas||s.kelas==F.kelas);
+async function obsTbl(g){const D=await cget('ob|'+OK+'|'+TH[OT].id,'obsGet',{kelompok:OK,tahap:TH[OT].id}),X=TH[OT],S=g.anggota.filter(s=>!F.kelas||s.kelas==F.kelas);
 const v=(i,s)=>{const r=D.find(x=>x.kode==i.k&&(i.l=='K'?!x.siswa:x.siswa==s));return r&&r.nilai?'checked':''};
 return`<div class="card w"><table><tr><th>Nama</th><th>Kelas</th>${X.i.map(i=>`<th title="${esc(i.x)}">${i.k}<br><span class="m">${i.l=='K'?'Kelompok':'Individu'}</span></th>`).join('')}</tr>
 ${S.map(s=>`<tr><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td>${X.i.map(i=>`<td><input type="checkbox" data-k="${i.k}" data-s="${esc(s.id)}" ${v(i,s.id)} ${i.l=='K'?'onchange="grpk(this)"':''}></td>`).join('')}</tr>`).join('')}</table></div>
@@ -213,9 +222,9 @@ const mean=a=>{a=a.filter(x=>x!=null);return a.length?a.reduce((t,x)=>t+x,0)/a.l
 function gdes(k,n,gr,bk,asp,lb){const v=asp.map((x,i)=>[x,i]).filter(x=>x[0]!=null).sort((a,b)=>b[0]-a[0]);let d=`${lb} ${k} (${n} siswa): rata-rata Gotong Royong ${pr(gr)}${gr!=null?' ('+Math.round(gr)+'%)':''}, Bernalar Kritis ${pr(bk)}${bk!=null?' ('+Math.round(bk)+'%)':''}.`;if(v.length>1)d+=` Aspek terkuat: ${AN[v[0][1]].toLowerCase()}; perlu ditingkatkan: ${AN[v[v.length-1][1]].toLowerCase()}.`;return d}
 function agg(m){const G={};REK.forEach(r=>{const k=KF[m](r)||'(tanpa)';(G[k]=G[k]||[]).push(r)});const lb={bus:'Bus',kelas:'Kelas',klp:'Kelompok'}[m];
 return Object.keys(G).sort().map(k=>{const L=G[k],asp=KD.map((_,i)=>mean(L.map(r=>r.asp[i]))),gr=mean(L.map(r=>r.gr)),bk=mean(L.map(r=>r.bk));return{k,n:L.length,asp,gr,bk,des:gdes(k,L.length,gr,bk,asp,lb)}})}
-V.rekap=async()=>{REK=await api('rekap');return head('Rekap & predikat','Nilai gabungan observasi, penilaian diri, dan teman sebaya (bobot diatur admin), per individu maupun rata-rata per bus, kelas, dan kelompok.')
+V.rekap=async()=>{REK=await cget('rekap','rekap');return head('Rekap & predikat','Nilai gabungan observasi, penilaian diri, dan teman sebaya (bobot diatur admin), per individu maupun rata-rata per bus, kelas, dan kelompok.')
 +`<div class="tabs">${Object.keys(RMN).map(k=>`<button class="tab${k==RM?' on':''}" onclick="RM='${k}';go('rekap')">${RMN[k]}</button>`).join('')}</div>`+(RM=='ind'?fl('tbR'):'')+`<div class="card"><button class="btn" onclick="xl()">Unduh Excel</button><button class="btn g" onclick="wd()">Unduh Word (rapor individu)</button></div><div class="card w" id="tb"></div><div id="dt"></div>`+(setTimeout(tbR),'')};
-function tbR(){if(RM=='ind'){$('#tb').innerHTML=`<table><tr><th>Nama</th><th>Kelas</th><th>Klp</th><th>Gotong Royong</th><th>Bernalar Kritis</th></tr>${RF().map(r=>`<tr class="k" onclick="dt('${esc(r.id)}')"><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${esc(r.kelompok)}</td><td>${fmt(r.gr)} ${pc(r.pg)}</td><td>${fmt(r.bk)} ${pc(r.pb)}</td></tr>`).join('')}</table>`}
+function tbR(){if(!$('#tb'))return;if(RM=='ind'){$('#tb').innerHTML=`<table><tr><th>Nama</th><th>Kelas</th><th>Klp</th><th>Gotong Royong</th><th>Bernalar Kritis</th></tr>${RF().map(r=>`<tr class="k" onclick="dt('${esc(r.id)}')"><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${esc(r.kelompok)}</td><td>${fmt(r.gr)} ${pc(r.pg)}</td><td>${fmt(r.bk)} ${pc(r.pb)}</td></tr>`).join('')}</table>`}
 else{AG=agg(RM);$('#tb').innerHTML=`<table><tr><th>${{bus:'Bus',kelas:'Kelas',klp:'Kelompok'}[RM]}</th><th>Siswa</th><th>Rata-rata Gotong Royong</th><th>Rata-rata Bernalar Kritis</th></tr>${AG.map((g,i)=>`<tr class="k" onclick="dg(${i})"><td>${esc(g.k)}</td><td>${g.n}</td><td>${fmt(g.gr)} ${pc(pr(g.gr))}</td><td>${fmt(g.bk)} ${pc(pr(g.bk))}</td></tr>`).join('')}</table>`}}
 function dt(id){const r=REK.find(x=>x.id==id);$('#dt').innerHTML=det(r.nama+' · '+r.kelas,r.gr,r.bk,r.asp,r.deskripsi);$('#dt').scrollIntoView({behavior:'smooth'})}
 function dg(i){const g=AG[i];$('#dt').innerHTML=det(RMN[RM]+': '+g.k,g.gr,g.bk,g.asp,g.des);$('#dt').scrollIntoView({behavior:'smooth'})}
